@@ -21,13 +21,13 @@ export const PROJECTS: Project[] = [
   {
     id: 'speed1',
     title: 'Improved pick-and-place',
-    costText: '750 ops',
+    costText: '400 ops',
     desc: 'PCBA lines run 25% faster.',
     phases: [1],
-    visible: (s) => s.lines >= 1 && s.ops >= 300,
-    afford: (s) => s.ops >= 750,
+    visible: (s) => s.lines >= 1 && s.ops >= 120,
+    afford: (s) => s.ops >= 400,
     buy: (s) => {
-      s.ops -= 750
+      s.ops -= 400
       s.lineSpeedMult *= 1.25
     },
   },
@@ -47,13 +47,13 @@ export const PROJECTS: Project[] = [
   {
     id: 'perry',
     title: 'Perry debug console',
-    costText: '2,000 ops',
-    desc: 'Attach the boot banner everyone secretly loves. +1 board trust.',
+    costText: '1,200 ops',
+    desc: 'Attach the RTT boot console everyone secretly loves. Opens a live window on the firmware. +1 board trust.',
     phases: [1],
-    visible: (s) => s.ops >= 800,
-    afford: (s) => s.ops >= 2000,
+    visible: (s) => s.ops >= 500,
+    afford: (s) => s.ops >= 1200,
     buy: (s) => {
-      s.ops -= 2000
+      s.ops -= 1200
       s.trust += 1
       pushLog(s, 'perry-debug attached. A small platypus watches approvingly.')
     },
@@ -213,13 +213,13 @@ export const PROJECTS: Project[] = [
   {
     id: 'autobuyer',
     title: 'AutoReelBuyer',
-    costText: '7,000 ops',
-    desc: 'Buys component reels automatically when stock runs low.',
+    costText: '$1,200',
+    desc: 'Buys component reels automatically when stock runs low. No more clicking Buy reel.',
     phases: [1],
-    visible: (s) => s.ops >= 3000,
-    afford: (s) => s.ops >= 7000,
+    visible: (s) => s.totalLoggers >= 20,
+    afford: (s) => s.funds >= 1200,
     buy: (s) => {
-      s.ops -= 7000
+      s.funds -= 1200
       s.autoReelBuyer = true
     },
   },

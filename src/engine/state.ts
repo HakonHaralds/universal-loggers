@@ -29,7 +29,7 @@ export function initialState(): GameState {
     trust: 0,
     trustSpent: 0,
     fibA: 1,
-    fibB: 2,
+    fibB: 1,
     devTeams: 0,
     clusters: 0,
     ops: 0,

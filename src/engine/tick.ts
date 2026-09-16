@@ -56,7 +56,14 @@ function stepMarket(s: GameState, dt: number) {
     s.fibA = s.fibB
     s.fibB = next
     s.trust += 1
-    pushLog(s, `Production milestone. Board trust increased (now ${s.trust}).`)
+    if (s.trust === 1) {
+      // Starter compute grant, so ops flow the moment Compute unlocks
+      s.devTeams += 1
+      s.clusters += 1
+      pushLog(s, 'Board grants a starter cloud budget: one dev team, one cluster. Compute is online.')
+    } else {
+      pushLog(s, `Production milestone. Board trust increased (now ${s.trust}).`)
+    }
   }
 }
 
@@ -69,7 +76,7 @@ export function opsCap(s: GameState): number {
 function stepCompute(s: GameState, dt: number) {
   const cap = opsCap(s)
   if (s.ops < cap) {
-    s.ops = Math.min(cap, s.ops + s.devTeams * 8 * dt)
+    s.ops = Math.min(cap, s.ops + s.devTeams * 12 * dt)
   } else if (s.ops > cap) {
     // molt overfill decays back toward the cap
     s.ops = Math.max(cap, s.ops - (s.ops - cap) * 0.02 * dt)
