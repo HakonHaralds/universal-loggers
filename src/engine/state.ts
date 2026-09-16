@@ -58,6 +58,8 @@ export function initialState(): GameState {
     clock: 0,
     batteries: 0,
     charge: 0,
+    tournField: null,
+    tournLast: null,
     probes: 0,
     rogues: 0,
     explored: 0,

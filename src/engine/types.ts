@@ -69,6 +69,8 @@ export interface GameState {
   clock: number
   batteries: number
   charge: number
+  tournField: number[] | null
+  tournLast: string | null
   // probes (phase 3)
   probes: number
   rogues: number

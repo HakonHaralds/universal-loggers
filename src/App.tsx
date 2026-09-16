@@ -6,6 +6,7 @@ import { visibleProjects, buyProject } from './engine/projects'
 import { fmt, money, pct, headline } from './format'
 import { REGIONS, regionReq, regionFillOf, regionUnlocked, regionFull } from './engine/regions'
 import { EVENTS, resolveEvent } from './engine/events'
+import { STRATEGIES, RING } from './engine/tournament'
 import { SagaCard, Perry } from './ui/art'
 import { PerryConsole } from './ui/PerryConsole'
 import { Glitch, Bleed, accentFor } from './ui/fx'
@@ -166,6 +167,7 @@ export default function App() {
         {s.phase >= 2 && <SwarmPanel s={s} act={act} />}
         {s.phase === 2 && <RegionPanel s={s} act={act} />}
         {s.phase >= 2 && <OversightPanel s={s} act={act} />}
+        {s.phase >= 2 && s.purchased.includes('tournament') && <TournamentPanel s={s} act={act} />}
         {s.phase === 3 && <ProbePanel s={s} act={act} />}
 
         {showCompute && (
@@ -409,6 +411,36 @@ function SwarmPanel({ s, act }: PanelProps) {
       )}
       <hr />
       {(['harvester', 'fab', 'solar', 'battery', 'assembler'] as A.SwarmUnit[]).map(buyUnit)}
+    </section>
+  )
+}
+
+function TournamentPanel({ s, act }: PanelProps) {
+  const field = s.tournField
+  return (
+    <section className="panel">
+      <h2>Logistics Tournament</h2>
+      <div className="note">Each strategy beats the next in the ring: {RING}</div>
+      {!field && (
+        <button disabled={s.ops < A.TOURN_COST} onClick={() => act(A.startTournament)}>
+          New tournament — {fmt(A.TOURN_COST)} ops
+        </button>
+      )}
+      {field && (
+        <>
+          <div className="row">
+            <span>Opponent field</span>
+            <b>{field.map((i) => STRATEGIES[i]).join(', ')}</b>
+          </div>
+          <div className="note">Pick your strategy to beat the most of them:</div>
+          {STRATEGIES.map((name, i) => (
+            <button key={i} onClick={() => act((st) => A.playTournament(st, i))}>
+              {name}
+            </button>
+          ))}
+        </>
+      )}
+      {s.tournLast && <div className="note">{s.tournLast}</div>}
     </section>
   )
 }

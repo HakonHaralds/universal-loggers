@@ -398,6 +398,18 @@ export const PROJECTS: Project[] = [
     },
   },
   {
+    id: 'tournament',
+    title: 'Strategic modeling',
+    costText: '10,000 ops',
+    desc: 'Unlocks the Logistics Tournament — model rival routing strategies for innovation. The swarm enjoys games. It always wins them.',
+    phases: [2, 3],
+    visible: () => true,
+    afford: (s) => s.ops >= 10_000,
+    buy: (s) => {
+      s.ops -= 10_000
+    },
+  },
+  {
     id: 'p2_recycle',
     title: 'Recycle the competitors',
     costText: '25,000 ops',

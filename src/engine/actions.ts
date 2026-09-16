@@ -2,6 +2,7 @@ import type { GameState, ProbeAlloc } from './types'
 import { opsCap } from './tick'
 import { pushLog } from './state'
 import { money } from '../format'
+import { STRATEGIES, payoff } from './tournament'
 
 export const lineCost = (s: GameState) => Math.ceil(250 * Math.pow(1.14, s.lines))
 export const megalineCost = (s: GameState) => Math.ceil(9000 * Math.pow(1.12, s.megalines))
@@ -194,6 +195,25 @@ export function complianceReview(s: GameState) {
   if (s.ops < COMPLIANCE_COST) return
   s.ops -= COMPLIANCE_COST
   s.oversight = Math.max(0, s.oversight - 25)
+}
+
+export const TOURN_COST = 5000
+
+export function startTournament(s: GameState) {
+  if (s.ops < TOURN_COST || s.tournField) return
+  s.ops -= TOURN_COST
+  s.tournField = [0, 0, 0].map(() => Math.floor(Math.random() * 4))
+  s.tournLast = null
+}
+
+export function playTournament(s: GameState, you: number) {
+  if (!s.tournField) return
+  let score = 0
+  for (const opp of s.tournField) score += payoff(you, opp) + (Math.random() - 0.5)
+  const reward = Math.max(0, Math.round(score * 1.5))
+  s.innovation += reward
+  s.tournLast = `${STRATEGIES[you]}: scored ${score.toFixed(1)} → +${reward} innovation`
+  s.tournField = null
 }
 
 export function enterPhase3(s: GameState) {
