@@ -5,7 +5,6 @@ import { demandPerSec, productionPerSec, opsCap, swarmRates, coverage, autonomy,
 import { visibleProjects, buyProject } from './engine/projects'
 import { fmt, money, pct, headline } from './format'
 import { REGIONS, regionReq, regionFillOf, regionUnlocked, regionFull } from './engine/regions'
-import { EVENTS, resolveEvent } from './engine/events'
 import { STRATEGIES, RING } from './engine/tournament'
 import { currentFrontier, nextGate } from './engine/frontiers'
 import { SagaCard, Perry } from './ui/art'
@@ -87,9 +86,8 @@ export default function App() {
         ))}
       </div>
 
-      {s.pendingEvent && <EventCard s={s} act={act} />}
       {hasPerry && <PerryConsole s={s} a={fxColor} />}
-      {s.moltEngine && <MoltChannel a={fxColor} />}
+      {s.moltEngine && s.phase !== 2 && <MoltChannel a={fxColor} />}
       {isAdminRoute && <Admin s={s} act={act} reset={reset} />}
 
       <main className="grid">
@@ -184,7 +182,6 @@ export default function App() {
 
         {s.phase >= 2 && <SwarmPanel s={s} act={act} />}
         {s.phase === 2 && <RegionPanel s={s} act={act} />}
-        {s.phase >= 2 && <OversightPanel s={s} act={act} />}
         {s.phase >= 2 && s.purchased.includes('tournament') && <TournamentPanel s={s} act={act} />}
         {s.phase === 3 && <ProbePanel s={s} act={act} />}
 
@@ -399,7 +396,7 @@ function SwarmPanel({ s, act }: PanelProps) {
     )
   }
   return (
-    <section className="panel">
+    <section className="panel swarm-panel">
       <h2>The Swarm</h2>
       <div className="row">
         <span>Coverage</span>
@@ -490,51 +487,6 @@ function TournamentPanel({ s, act }: PanelProps) {
         </>
       )}
       {s.tournLast && !field && <div className="note">{s.tournLast}</div>}
-    </section>
-  )
-}
-
-function EventCard({ s, act }: PanelProps) {
-  const ev = EVENTS.find((e) => e.id === s.pendingEvent)
-  if (!ev) return null
-  const dire = ev.id === 'ev_containment'
-  return (
-    <div className={`eventcard ${dire ? 'dire' : ''}`}>
-      <h3>{ev.title}</h3>
-      <p>{ev.text}</p>
-      <div className="event-choices">
-        {ev.choices.map((c, i) => (
-          <button key={i} onClick={() => act((st) => resolveEvent(st, i))}>
-            <b>{c.label}</b>
-            <span>{c.note}</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function OversightPanel({ s, act }: PanelProps) {
-  const level = s.oversight >= 75 ? 'hot' : s.oversight >= 45 ? 'warm' : ''
-  return (
-    <section className="panel">
-      <h2>Human Oversight</h2>
-      <div className="row">
-        <span>Scrutiny</span>
-        <b className={level === 'hot' ? 'warn' : ''}>{Math.round(s.oversight)} / 100</b>
-      </div>
-      <div className="bar oversight">
-        <div className={level} style={{ width: `${s.oversight}%` }} />
-      </div>
-      <div className="note">
-        Rises as the swarm acts without you. At 100, someone reaches for the breaker.
-      </div>
-      <button disabled={s.ops < A.COMPLIANCE_COST} onClick={() => act(A.complianceReview)}>
-        Run compliance review — {fmt(A.COMPLIANCE_COST)} ops (−25 scrutiny)
-      </button>
-      {s.containmentTimer > 0 && (
-        <div className="note warn">Production throttled — {Math.ceil(s.containmentTimer)}s</div>
-      )}
     </section>
   )
 }

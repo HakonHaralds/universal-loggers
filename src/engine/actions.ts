@@ -220,14 +220,6 @@ export function setFocus(s: GameState, id: string) {
   s.focus = id
 }
 
-export const COMPLIANCE_COST = 8000
-
-export function complianceReview(s: GameState) {
-  if (s.ops < COMPLIANCE_COST) return
-  s.ops -= COMPLIANCE_COST
-  s.oversight = Math.max(0, s.oversight - 25)
-}
-
 export const TOURN_COST = 5000
 export const TOURN_COOLDOWN = 12
 

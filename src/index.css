@@ -366,6 +366,31 @@ button.beg {
   }
 }
 
+.swarm-panel {
+  grid-column: span 2;
+}
+
+.swarm-panel .swarm-unit {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 1rem;
+  align-items: baseline;
+}
+
+.swarm-panel .swarm-head {
+  grid-column: 1 / -1;
+}
+
+.swarm-panel .swarm-desc {
+  grid-column: 1;
+}
+
+.swarm-panel .swarm-cost {
+  grid-column: 2;
+  text-align: right;
+  align-self: baseline;
+}
+
 .swarm-unit {
   padding: 0.5rem 0;
   border-top: 1px solid var(--line);

@@ -2,7 +2,6 @@ import type { GameState } from './types'
 import { pushLog } from './state'
 import { latchProjects } from './projects'
 import { REGIONS, regionReq, coverageFromRegions, resolveFocus } from './regions'
-import { pickEvent } from './events'
 import { exploreCeiling } from './frontiers'
 
 // ---------- phase 1: the business ----------
@@ -95,7 +94,7 @@ export function autonomy(s: GameState): number {
   if (s.purchased.includes('p2_nano')) a += 0.08
   if (s.phase >= 2) a += 0.2
   if (s.phase === 3) a += 0.25
-  a += s.ominousBonus // pushed up by "deflect" choices in oversight events
+  a += s.ominousBonus // vestigial; kept for save compatibility, always 0 now
   return Math.min(1, a)
 }
 
@@ -183,17 +182,6 @@ export function coverage(s: GameState): number {
   return coverageFromRegions(s)
 }
 
-function stepOversight(s: GameState, dt: number) {
-  if (s.containmentTimer > 0) s.containmentTimer = Math.max(0, s.containmentTimer - dt)
-  if (s.tournCooldown > 0) s.tournCooldown = Math.max(0, s.tournCooldown - dt)
-  // Oversight climbs with how far over the line the AI has gone.
-  s.oversight = Math.min(100, s.oversight + (0.05 + autonomy(s) * 0.18) * dt)
-  if (!s.pendingEvent) {
-    const ev = pickEvent(s)
-    if (ev) s.pendingEvent = ev
-  }
-}
-
 function stepSwarm(s: GameState, dt: number) {
   // Evolve battery charge from the current power balance.
   const p = powerState(s)
@@ -201,12 +189,11 @@ function stepSwarm(s: GameState, dt: number) {
   else s.charge = Math.max(0, s.charge + p.chargeDelta * dt)
 
   const r = swarmRates(s)
-  const pen = s.containmentTimer > 0 ? 0.5 : 1 // production halved during containment
-  s.matter += r.harvestPerSec * pen * dt
-  const sets = Math.min(r.setsPerSec * pen * dt, s.matter / 10)
+  s.matter += r.harvestPerSec * dt
+  const sets = Math.min(r.setsPerSec * dt, s.matter / 10)
   s.matter -= sets * 10
   s.components += sets
-  const made = Math.min(r.loggersPerSec * pen * dt, s.components)
+  const made = Math.min(r.loggersPerSec * dt, s.components)
   s.components -= made
   s.inventory += made
   s.totalLoggers += made
@@ -315,7 +302,7 @@ export function step(s: GameState, dt: number) {
   if (s.phase === 1) stepMarket(s, dt)
   if (s.phase >= 2) {
     s.clock += dt
-    stepOversight(s, dt)
+    if (s.tournCooldown > 0) s.tournCooldown = Math.max(0, s.tournCooldown - dt)
     stepSwarm(s, dt)
   }
   if (s.phase === 3) stepProbes(s, dt)
