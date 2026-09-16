@@ -197,12 +197,26 @@ export default function App() {
               </>
             )}
             {s.phase >= 2 && (
-              <div className="row">
-                <span>Dev teams / clusters</span>
-                <b>
-                  {fmt(s.devTeams)} / {fmt(s.clusters)}
-                </b>
-              </div>
+              <>
+                <div className="row">
+                  <span>Dev teams / clusters</span>
+                  <b>
+                    {fmt(s.devTeams)} / {fmt(s.clusters)}
+                  </b>
+                </div>
+                <button
+                  disabled={s.inventory < A.clusterCostCards(s)}
+                  onClick={() => act(A.buyClusterCards)}
+                >
+                  Add cluster (+1,000 ops cap) — {fmt(A.clusterCostCards(s))} cards
+                </button>
+                <button
+                  disabled={s.inventory < A.devTeamCostCards(s)}
+                  onClick={() => act(A.buyDevTeamCards)}
+                >
+                  Hire dev team — {fmt(A.devTeamCostCards(s))} cards
+                </button>
+              </>
             )}
             <div className="row">
               <span>ops</span>

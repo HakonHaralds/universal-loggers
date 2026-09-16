@@ -88,6 +88,27 @@ export function addCluster(s: GameState) {
   }
 }
 
+// In Phase 2/3 there is no board trust, so compute is bought with cards — the
+// abundant currency there — with a scaling cost so it stays a real choice.
+export const clusterCostCards = (s: GameState) => Math.ceil(1_000_000 * Math.pow(1.15, s.clusters))
+export const devTeamCostCards = (s: GameState) => Math.ceil(1_000_000 * Math.pow(1.15, s.devTeams))
+
+export function buyClusterCards(s: GameState) {
+  const c = clusterCostCards(s)
+  if (s.inventory >= c) {
+    s.inventory -= c
+    s.clusters += 1
+  }
+}
+
+export function buyDevTeamCards(s: GameState) {
+  const c = devTeamCostCards(s)
+  if (s.inventory >= c) {
+    s.inventory -= c
+    s.devTeams += 1
+  }
+}
+
 export const MOLT_COOLDOWN = 45 // seconds
 
 export function moltBurst(s: GameState) {
