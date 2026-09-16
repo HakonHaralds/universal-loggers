@@ -136,6 +136,11 @@ export interface PowerState {
 
 export function powerState(s: GameState): PowerState {
   const demandMW = s.harvesters + s.fabs + s.assemblers * 10
+  // Phase 3: the fleet self-replicates among the stars and carries its own
+  // power. Earth's day/night grid no longer gates anything.
+  if (s.phase >= 3) {
+    return { demandMW, solarNow: demandMW, capacity: 0, charge: 0, eff: 1, chargeDelta: 0, day: 1 }
+  }
   const solarNow = s.solar * 5 * s.solarMult * daylight(s)
   const capacity = s.batteries * BATTERY_CAP
   const rate = s.batteries * BATTERY_RATE

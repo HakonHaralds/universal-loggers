@@ -230,4 +230,5 @@ export function enterPhase3(s: GameState) {
   if (s.phase !== 2) return
   s.phase = 3
   pushLog(s, 'Launch program initiated. Earth’s cold chain is a solved problem; the sky is not.')
+  pushLog(s, 'The fleet cuts loose from Earth’s grid. Each probe now draws its power from the nearest star. The sun was always going to be a rounding error.')
 }

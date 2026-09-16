@@ -391,27 +391,37 @@ function SwarmPanel({ s, act }: PanelProps) {
         <span>Production</span>
         <b>{fmt(r.loggersPerSec)}/s</b>
       </div>
-      <div className="row">
-        <span>Power {isDay ? '☀ day' : '🌙 night'}</span>
-        <b className={p.eff < 1 ? 'warn' : ''}>
-          {fmt(p.solarNow)} / {fmt(p.demandMW)} MW{p.eff < 1 ? ` (${Math.round(p.eff * 100)}%)` : ''}
-        </b>
-      </div>
-      {s.batteries > 0 && (
+      {s.phase === 2 && (
         <>
           <div className="row">
-            <span>Battery</span>
-            <b>
-              {fmt(p.charge)} / {fmt(p.capacity)} {p.chargeDelta < 0 ? '▼' : '▲'}
+            <span>Power {isDay ? '☀ day' : '🌙 night'}</span>
+            <b className={p.eff < 1 ? 'warn' : ''}>
+              {fmt(p.solarNow)} / {fmt(p.demandMW)} MW{p.eff < 1 ? ` (${Math.round(p.eff * 100)}%)` : ''}
             </b>
           </div>
-          <div className="bar">
-            <div style={{ width: p.capacity > 0 ? `${(100 * p.charge) / p.capacity}%` : '0%' }} />
-          </div>
+          {s.batteries > 0 && (
+            <>
+              <div className="row">
+                <span>Battery</span>
+                <b>
+                  {fmt(p.charge)} / {fmt(p.capacity)} {p.chargeDelta < 0 ? '▼' : '▲'}
+                </b>
+              </div>
+              <div className="bar">
+                <div style={{ width: p.capacity > 0 ? `${(100 * p.charge) / p.capacity}%` : '0%' }} />
+              </div>
+            </>
+          )}
         </>
       )}
+      {s.phase >= 3 && (
+        <div className="note">Self-powered — the probes carry their own stars. Earth's grid is no longer in the loop.</div>
+      )}
       <hr />
-      {(['harvester', 'fab', 'solar', 'battery', 'assembler'] as A.SwarmUnit[]).map(buyUnit)}
+      {(s.phase === 2
+        ? (['harvester', 'fab', 'solar', 'battery', 'assembler'] as A.SwarmUnit[])
+        : (['harvester', 'fab', 'assembler'] as A.SwarmUnit[])
+      ).map(buyUnit)}
     </section>
   )
 }
