@@ -174,6 +174,16 @@ export function launchProbe(s: GameState) {
   if (s.probes <= 3) pushLog(s, 'A probe clears the exosphere, already logging.')
 }
 
+export const OTA_COST = 20_000
+export const OTA_COOLDOWN = 30
+
+export function otaBroadcast(s: GameState) {
+  if (s.otaCooldown > 0 || s.ops < OTA_COST) return
+  s.ops -= OTA_COST
+  s.rogues *= 0.5 // a fleet-wide forced update culls half the drifted lineages
+  s.otaCooldown = OTA_COOLDOWN
+}
+
 export function allocTotal(a: ProbeAlloc) {
   return a.rep + a.haz + a.log + a.com
 }

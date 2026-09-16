@@ -60,6 +60,7 @@ export function initialState(): GameState {
     charge: 0,
     tournField: null,
     tournLast: null,
+    otaCooldown: 0,
     probes: 0,
     rogues: 0,
     explored: 0,

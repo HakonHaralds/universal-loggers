@@ -7,6 +7,7 @@ import { fmt, money, pct, headline } from './format'
 import { REGIONS, regionReq, regionFillOf, regionUnlocked, regionFull } from './engine/regions'
 import { EVENTS, resolveEvent } from './engine/events'
 import { STRATEGIES, RING } from './engine/tournament'
+import { currentFrontier, nextGate } from './engine/frontiers'
 import { SagaCard, Perry } from './ui/art'
 import { PerryConsole } from './ui/PerryConsole'
 import { Glitch, Bleed, accentFor } from './ui/fx'
@@ -541,16 +542,15 @@ function ProbePanel({ s, act }: PanelProps) {
       </span>
     </div>
   )
+  const frontier = currentFrontier(s)
+  const gate = nextGate(s)
+  const purity = (100 * s.probes) / (s.probes + s.rogues + 1)
   return (
     <section className="panel">
       <h2>Probe fleet</h2>
       <div className="row">
-        <span>Probes</span>
-        <b>{fmt(s.probes)}</b>
-      </div>
-      <div className="row">
-        <span>Drifted (rogue)</span>
-        <b className={s.rogues > s.probes / 100 ? 'warn' : ''}>{fmt(s.rogues)}</b>
+        <span>Frontier</span>
+        <b>{frontier.name}</b>
       </div>
       <div className="row">
         <span>Universe logged</span>
@@ -559,6 +559,32 @@ function ProbePanel({ s, act }: PanelProps) {
       <div className="bar">
         <div style={{ width: `${100 * s.explored}%` }} />
       </div>
+      {gate && (
+        <div className="note">
+          Frontier gated — unlock <b>{gate.name}</b> via the {gate.gate === 'f_interstellar' ? 'Interstellar replication' : gate.gate === 'f_galactic' ? 'Galactic drift-hardening' : gate.gate === 'f_intergalactic' ? 'Intergalactic launch' : 'Comoving expansion drive'} project.
+        </div>
+      )}
+      <hr />
+      <div className="row">
+        <span>Probes</span>
+        <b>{fmt(s.probes)}</b>
+      </div>
+      <div className="row">
+        <span>Drifted (rogue)</span>
+        <b className={s.rogues > s.probes / 20 ? 'warn' : ''}>{fmt(s.rogues)}</b>
+      </div>
+      <div className="row">
+        <span>Fleet loyalty</span>
+        <b className={purity < 80 ? 'warn' : ''}>{purity.toFixed(1)}%</b>
+      </div>
+      <button
+        disabled={s.otaCooldown > 0 || s.ops < A.OTA_COST}
+        onClick={() => act(A.otaBroadcast)}
+      >
+        {s.otaCooldown > 0
+          ? `OTA broadcasting… (${Math.ceil(s.otaCooldown)}s)`
+          : `Broadcast OTA update — ${fmt(A.OTA_COST)} ops (−50% rogues)`}
+      </button>
       <button className="primary" disabled={s.inventory < A.PROBE_COST} onClick={() => act(A.launchProbe)}>
         Launch probe — {fmt(A.PROBE_COST)} Saga Cards
       </button>

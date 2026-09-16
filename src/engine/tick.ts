@@ -3,6 +3,7 @@ import { pushLog } from './state'
 import { latchProjects } from './projects'
 import { REGIONS, regionReq, coverageFromRegions, resolveFocus } from './regions'
 import { pickEvent } from './events'
+import { exploreCeiling } from './frontiers'
 
 // ---------- phase 1: the business ----------
 
@@ -226,6 +227,7 @@ const EXPLORE_SATURATION = 1e16
 
 function stepProbes(s: GameState, dt: number) {
   const a = s.alloc
+  if (s.otaCooldown > 0) s.otaCooldown = Math.max(0, s.otaCooldown - dt)
   if (s.probes > 0) {
     const growth = s.probes * 0.004 * a.rep * dt
     const drift = growth * s.driftFrac
@@ -242,8 +244,12 @@ function stepProbes(s: GameState, dt: number) {
     s.probes = Math.min(s.probes, PROBE_CAP)
     s.rogues = Math.min(s.rogues, PROBE_CAP)
 
+    // Exploration is capped at the current frontier's ceiling and scaled by
+    // fleet purity — a drifted majority explores for itself, not for you.
+    const ceiling = exploreCeiling(s)
+    const purity = s.probes / (s.probes + s.rogues + 1)
     const saturation = s.probes / (s.probes + EXPLORE_SATURATION)
-    s.explored = Math.min(1, s.explored + saturation * 0.0004 * a.log * dt)
+    s.explored = Math.min(ceiling, s.explored + saturation * 0.0005 * a.log * purity * dt)
   }
 
   s.battleTimer -= dt

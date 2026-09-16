@@ -532,6 +532,55 @@ export const PROJECTS: Project[] = [
     },
   },
   {
+    id: 'f_interstellar',
+    title: 'Interstellar replication',
+    costText: '40 innovation',
+    desc: 'Probes that survive the gap between stars. Opens exploration past the Solar System, out to the nearby stars.',
+    phases: [3],
+    visible: (s) => s.explored >= 0.045,
+    afford: (s) => s.innovation >= 40,
+    buy: (s) => {
+      s.innovation -= 40
+    },
+  },
+  {
+    id: 'f_galactic',
+    title: 'Galactic drift-hardening',
+    costText: '90 innovation',
+    desc: 'Firmware that holds its values across a hundred thousand light-years. Opens the rest of the Galaxy.',
+    phases: [3],
+    visible: (s) => s.explored >= 0.19,
+    afford: (s) => s.innovation >= 90,
+    buy: (s) => {
+      s.innovation -= 90
+    },
+  },
+  {
+    id: 'f_intergalactic',
+    title: 'Intergalactic launch',
+    costText: '180 innovation + 80,000 ops',
+    desc: 'The void between galaxies is mostly nothing, which the swarm regards as an opportunity. Opens the Local Group.',
+    phases: [3],
+    visible: (s) => s.explored >= 0.49,
+    afford: (s) => s.innovation >= 180 && s.ops >= 80_000,
+    buy: (s) => {
+      s.innovation -= 180
+      s.ops -= 80_000
+    },
+  },
+  {
+    id: 'f_cosmic',
+    title: 'Comoving expansion drive',
+    costText: '350 innovation',
+    desc: 'Outrun cosmic expansion itself, to log the lanes receding beyond the horizon. Opens the Observable Universe.',
+    phases: [3],
+    visible: (s) => s.explored >= 0.79,
+    afford: (s) => s.innovation >= 350,
+    buy: (s) => {
+      s.innovation -= 350
+    },
+  },
+  {
     id: 'p3_attest',
     title: 'Firmware attestation',
     costText: '100 innovation',

@@ -71,6 +71,7 @@ export interface GameState {
   charge: number
   tournField: number[] | null
   tournLast: string | null
+  otaCooldown: number
   // probes (phase 3)
   probes: number
   rogues: number
