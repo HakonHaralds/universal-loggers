@@ -87,6 +87,61 @@ export const PROJECTS: Project[] = [
     },
   },
   {
+    id: 'hil_rig',
+    title: 'Stand up the HIL rig',
+    costText: '3,000 ops',
+    desc: 'A Raspberry Pi that flashes a real Saga Card and measures it, instead of trusting that the flash "looks plausible from outside." Hardware-in-the-loop. +1 board trust.',
+    phases: [1],
+    visible: (s) => s.ops >= 1000,
+    afford: (s) => s.ops >= 3000,
+    buy: (s) => {
+      s.ops -= 3000
+      s.trust += 1
+      pushLog(s, 'The rig comes up clean and idempotent — and finds five real bugs in the doing.')
+    },
+  },
+  {
+    id: 'hil_smoke',
+    title: 'HIL smoke test',
+    costText: '4,000 ops',
+    desc: 'Boot a card and watch one upload cycle on real hardware. Catches the boards that reset every ten minutes and log nothing — before the batch ships. Demand +20%.',
+    phases: [1],
+    visible: (s) => has(s, 'hil_rig'),
+    afford: (s) => s.ops >= 4000,
+    buy: (s) => {
+      s.ops -= 4000
+      s.demandMult *= 1.2
+      pushLog(s, 'A batch passed inspection but not hardware. Now it has to pass hardware.')
+    },
+  },
+  {
+    id: 'hil_selfcheck',
+    title: 'Rig self-check',
+    costText: '3,500 ops',
+    desc: 'Before the firmware runs: card drawing current, debug port answering, identity matching the card this rig is meant to hold. Flakiness becomes a hardware fault, not a retry. +1 board trust.',
+    phases: [1],
+    visible: (s) => has(s, 'hil_rig'),
+    afford: (s) => s.ops >= 3500,
+    buy: (s) => {
+      s.ops -= 3500
+      s.trust += 1
+      pushLog(s, 'No more confident green off the dev kit’s own chip. A build that passes on the second press just teaches everyone to press twice.')
+    },
+  },
+  {
+    id: 'hil_nightly',
+    title: 'Nightly HIL on main',
+    costText: '25 innovation',
+    desc: 'An integration build every night — every module at its tip, on real hardware. Regressions surface the next morning instead of at release. Demand +25%.',
+    phases: [1],
+    visible: (s) => has(s, 'hil_smoke') && s.innovationUnlocked,
+    afford: (s) => s.innovation >= 25,
+    buy: (s) => {
+      s.innovation -= 25
+      s.demandMult *= 1.25
+    },
+  },
+  {
     id: 'tmp117',
     title: 'TMP117 calibration pass',
     costText: '3,500 ops',

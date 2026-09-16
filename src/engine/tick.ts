@@ -176,6 +176,9 @@ interface Milestone {
 
 const MILESTONES: Milestone[] = [
   { id: 'm500', when: (s) => s.totalLoggers >= 500, msg: 'First pallet of Saga Cards leaves the dock.' },
+  { id: 'device_hil', when: (s) => s.totalLoggers >= 2500, msg: 'The Saga device’s test rig came first. The Card reuses its architecture, not its code — the Card speaks a different shell.' },
+  { id: 'flight_test', when: (s) => s.totalLoggers >= 4000, msg: 'A prototype Saga Card field-tests itself aboard Icelandair FI615, KEF → JFK and home again — riding in a passenger’s suitcase.' },
+  { id: 'hil_porch', when: (s) => s.purchased.includes('hil_rig'), msg: 'A second rig joins the Pi — two rigs, pooled and independently reservable. Still, a rig is like a good porch swing: one of you sits in it at a time.' },
   { id: 'asgeir', when: (s) => s.totalLoggers >= 1500, msg: 'Ásgeir (CTO) asks whether the Saga Card could run a small language model. It cannot. He remains hopeful.' },
   { id: 'wtp', when: (s) => s.funds >= 8000, msg: "Sales reports the customer has 'high willingness to pay.' Nothing is signed. The phrase means nothing, yet it echoes down the hall." },
   { id: 'm10k', when: (s) => s.totalLoggers >= 10_000, msg: 'A top-5 pharma signs a master agreement. An actual signature. Sales is stunned.' },
