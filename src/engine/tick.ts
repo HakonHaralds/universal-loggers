@@ -73,6 +73,24 @@ export function opsCap(s: GameState): number {
   return s.clusters * 1000
 }
 
+/**
+ * Hidden "autonomy" temperature, 0..1 — how far the AI has gone over the line.
+ * Rises with the player's own AI-forward choices, so the creep is self-inflicted.
+ * Drives every ominous UI effect. Imperceptible in early Phase 1 by design.
+ */
+export function autonomy(s: GameState): number {
+  let a = 0
+  if (s.phase === 1) a += Math.min(0.08, (s.totalLoggers / 1_000_000) * 0.08)
+  if (s.moltEngine) a += 0.1
+  if (s.hypno) a += 0.14
+  if (s.phase1Complete) a += 0.14
+  if (s.purchased.includes('p2_asgeir')) a += 0.08
+  if (s.purchased.includes('p2_nano')) a += 0.08
+  if (s.phase >= 2) a += 0.2
+  if (s.phase === 3) a += 0.25
+  return Math.min(1, a)
+}
+
 function stepCompute(s: GameState, dt: number) {
   const cap = opsCap(s)
   if (s.ops < cap) {

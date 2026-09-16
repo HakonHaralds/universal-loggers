@@ -72,6 +72,7 @@ export interface GameState {
   phase3Complete: boolean
   endDismissed: boolean
   finaleDismissed: boolean
+  stabilizeUI: boolean
   purchased: string[]
   seen: string[]
   milestonesShown: string[]

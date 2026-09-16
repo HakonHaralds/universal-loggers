@@ -59,6 +59,7 @@ export function initialState(): GameState {
     phase3Complete: false,
     endDismissed: false,
     finaleDismissed: false,
+    stabilizeUI: false,
     purchased: [],
     seen: [],
     milestonesShown: [],

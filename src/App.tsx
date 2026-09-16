@@ -1,28 +1,55 @@
+import { useEffect, useRef } from 'react'
 import { useGame } from './useGame'
 import * as A from './engine/actions'
-import { demandPerSec, productionPerSec, opsCap, swarmRates, coverage } from './engine/tick'
+import { demandPerSec, productionPerSec, opsCap, swarmRates, coverage, autonomy } from './engine/tick'
 import { visibleProjects, buyProject } from './engine/projects'
 import { fmt, money, pct } from './format'
-import { SagaCard, Perry, PerryBanner } from './ui/art'
+import { SagaCard, Perry } from './ui/art'
+import { PerryConsole } from './ui/PerryConsole'
+import { Glitch, Bleed, accentFor } from './ui/fx'
 import Admin from './ui/Admin'
 
 const isAdminRoute =
   window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#admin'
+const reducedMotion =
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 export default function App() {
   const { s, act, reset } = useGame()
   const showCompute = s.trust > 0 || s.devTeams > 0 || s.clusters > 0
   const hasPerry = s.purchased.includes('perry')
 
+  const a = autonomy(s)
+  const fxColor = s.stabilizeUI ? 0 : a // palette, console tone, Perry tint (not "motion")
+  const fxMotion = s.stabilizeUI || reducedMotion ? 0 : a // glitch, bleed, cursor-tracking, tint
+  const fxRef = useRef(0)
+  fxRef.current = fxMotion
+
+  // Palette drift: warm brand blue slowly cools toward cyan-green as autonomy climbs.
+  const fxq = Math.round(fxColor * 40) / 40
+  useEffect(() => {
+    const root = document.documentElement
+    if (fxq <= 0.001) root.style.removeProperty('--accent')
+    else root.style.setProperty('--accent', accentFor(fxq))
+  }, [fxq])
+
+  const tintOpacity = fxMotion > 0.3 ? ((fxMotion - 0.3) / 0.7) * 0.09 : 0
+
   return (
     <div className="wrap">
+      <div className="coldtint" style={{ opacity: tintOpacity }} aria-hidden />
+
       <header>
         <div className="hero">
           <SagaCard size={128} />
           <div className="hero-num">
-            <h1>Universal Saga Cards</h1>
+            <h1>
+              <Glitch text="Universal Saga Cards" fxRef={fxRef} />
+            </h1>
             <div className="big">{fmt(s.totalLoggers)}</div>
-            <div className="sub">Saga Cards produced</div>
+            <div className="sub">
+              <Bleed normal="Saga Cards produced" alt="units secured" fxRef={fxRef} />
+            </div>
           </div>
         </div>
         {s.phase === 2 && <div className="sub focus">{pct(coverage(s), 4)} of Earth&apos;s shipments monitored</div>}
@@ -40,7 +67,7 @@ export default function App() {
         ))}
       </div>
 
-      {hasPerry && <PerryBanner />}
+      {hasPerry && <PerryConsole s={s} a={fxColor} />}
       {isAdminRoute && <Admin s={s} act={act} reset={reset} />}
 
       <main className="grid">
@@ -87,7 +114,9 @@ export default function App() {
             <section className="panel">
               <h2>Business</h2>
               <div className="row">
-                <span>Available funds</span>
+                <span>
+                  <Bleed normal="Available funds" alt="resources" fxRef={fxRef} />
+                </span>
                 <b>{money(s.funds)}</b>
               </div>
               <div className="row">
@@ -106,7 +135,9 @@ export default function App() {
                 </span>
               </div>
               <div className="row">
-                <span>Demand</span>
+                <span>
+                  <Bleed normal="Demand" alt="compliance" fxRef={fxRef} />
+                </span>
                 <b>{demandPerSec(s).toFixed(2)}/s</b>
               </div>
               <hr />
@@ -123,7 +154,9 @@ export default function App() {
 
         {showCompute && (
           <section className="panel">
-            <h2>Compute</h2>
+            <h2>
+              <Glitch text="Compute" fxRef={fxRef} />
+            </h2>
             {s.phase === 1 && (
               <>
                 <div className="row">
@@ -177,7 +210,9 @@ export default function App() {
         )}
 
         <section className="panel projects">
-          <h2>Projects</h2>
+          <h2>
+            <Glitch text="Projects" fxRef={fxRef} />
+          </h2>
           {visibleProjects(s).length === 0 && (
             <div className="note">Nothing available yet. Ship more Saga Cards.</div>
           )}
@@ -242,19 +277,24 @@ export default function App() {
 
       <footer>
         <div className="footer-perry">
-          <Perry size={64} />
+          <Perry size={64} a={fxColor} motion={fxMotion > 0} />
         </div>
         <span>
           A <a href="https://www.decisionproblem.com/paperclips/">Universal Paperclips</a> homage · Phase {s.phase} of 3
         </span>
-        <button
-          className="danger"
-          onClick={() => {
-            if (window.confirm('Erase all progress?')) reset()
-          }}
-        >
-          Reset game
-        </button>
+        <span className="footer-actions">
+          <button className="ghost" onClick={() => act((st) => void (st.stabilizeUI = !st.stabilizeUI))}>
+            {s.stabilizeUI ? 'UI: stabilized' : 'Stabilize UI'}
+          </button>
+          <button
+            className="danger"
+            onClick={() => {
+              if (window.confirm('Erase all progress?')) reset()
+            }}
+          >
+            Reset game
+          </button>
+        </span>
       </footer>
     </div>
   )

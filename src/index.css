@@ -213,30 +213,130 @@ button.inline {
 }
 
 .perry-console {
-  background: #0b0b0b;
+  background: #0a0d0b;
   border: 1px solid var(--line);
   border-radius: 6px;
   margin-bottom: 1rem;
   overflow: hidden;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
-.perry-console summary {
-  cursor: pointer;
+.pc-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0.8rem;
+  border-bottom: 1px solid #1c241e;
+  color: #6fd0a0;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+}
+
+.pc-head .auton {
+  color: #4c6a58;
+  font-variant-numeric: tabular-nums;
+}
+
+.perry-console.over .pc-head .auton {
+  color: #c9a24a;
+}
+
+.perry-console.cold .pc-head {
+  color: #6fd6d0;
+}
+
+.pc-head .auton em {
+  font-style: normal;
+  letter-spacing: 0.18em;
+  opacity: 0.8;
+}
+
+.pc-log {
   padding: 0.5rem 0.8rem;
-  color: #7fd0a0;
-  font-family: ui-monospace, monospace;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: #8fe0b0;
+  min-height: 7.5em;
+}
+
+.pc-log div {
+  white-space: pre-wrap;
+  animation: pcin 0.3s ease-out;
+}
+
+.perry-console.over .pc-log {
+  color: #cbb98a;
+}
+
+.perry-console.cold .pc-log {
+  color: #8fdcd6;
+}
+
+@keyframes pcin {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+
+.pc-banner {
+  border-top: 1px solid #1c241e;
+}
+
+.pc-banner summary {
+  cursor: pointer;
+  padding: 0.4rem 0.8rem;
+  color: #4c6a58;
+  font-size: 0.72rem;
   user-select: none;
 }
 
-.perry-console pre {
+.pc-banner pre {
   margin: 0;
-  padding: 0.5rem 0.8rem 1rem;
-  color: #9fe3b8;
+  padding: 0.3rem 0.8rem 0.9rem;
+  color: #6fbf90;
   font-size: 7px;
   line-height: 1.05;
   overflow-x: auto;
   white-space: pre;
+}
+
+.coldtint {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 80% 10%, rgba(20, 200, 168, 0.5), rgba(10, 60, 70, 0.6) 70%);
+  transition: opacity 2s linear;
+}
+
+.footer-actions {
+  display: inline-flex;
+  gap: 0.5rem;
+}
+
+button.ghost {
+  display: inline-block;
+  width: auto;
+  color: var(--muted);
+  opacity: 0.75;
+}
+
+.overlay {
+  z-index: 50;
+}
+
+.primary {
+  transition: background-color 2s linear, border-color 2s linear;
+}
+
+.bar > div {
+  transition: width 0.15s linear, background-color 2s linear;
+}
+
+.big,
+.focus {
+  transition: color 2s linear;
 }
 
 .footer-perry {
