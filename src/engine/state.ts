@@ -61,6 +61,7 @@ export function initialState(): GameState {
     tournField: null,
     tournLast: null,
     tournCooldown: 0,
+    tournBuffTimer: 0,
     otaCooldown: 0,
     probes: 0,
     rogues: 0,

@@ -418,7 +418,7 @@ function SwarmPanel({ s, act }: PanelProps) {
         <b>{fmt(s.components)}</b>
       </div>
       <div className="row">
-        <span>Production</span>
+        <span>Production{s.tournBuffTimer > 0 ? ' ⚡' : ''}</span>
         <b>{fmt(r.loggersPerSec)}/s</b>
       </div>
       {s.phase === 2 && (
@@ -461,7 +461,13 @@ function TournamentPanel({ s, act }: PanelProps) {
   return (
     <section className="panel">
       <h2>Logistics Tournament</h2>
-      <div className="note">Spend ops, out-route the field, win innovation. The ring: {RING}</div>
+      <div className="note">Out-route the field to bank a ×1.5 throughput boost. The ring: {RING}</div>
+      {s.tournBuffTimer > 0 && (
+        <div className="row">
+          <span>⚡ Route optimization</span>
+          <b className="focus">+50% throughput — {Math.ceil(s.tournBuffTimer)}s</b>
+        </div>
+      )}
       {!field && (
         <button
           disabled={s.ops < A.TOURN_COST || s.tournCooldown > 0}

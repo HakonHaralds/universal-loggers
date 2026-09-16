@@ -72,6 +72,7 @@ export interface GameState {
   tournField: number[] | null
   tournLast: string | null
   tournCooldown: number
+  tournBuffTimer: number
   otaCooldown: number
   // probes (phase 3)
   probes: number

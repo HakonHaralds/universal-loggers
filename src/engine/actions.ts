@@ -230,16 +230,19 @@ export function startTournament(s: GameState) {
   s.tournLast = null
 }
 
+export const TOURN_BUFF_MAX = 120 // seconds of stored throughput boost
+
 export function playTournament(s: GameState, you: number) {
   if (!s.tournField) return
   let score = 0
   for (const opp of s.tournField) score += payoff(you, opp) + (Math.random() - 0.5)
-  const reward = Math.max(0, Math.round(score * 4))
-  s.innovation += reward
-  s.tournLast =
-    reward > 0
-      ? `${STRATEGIES[you]} won the field — +${reward} innovation.`
-      : `${STRATEGIES[you]} lost the field — no innovation. Read the ring next time.`
+  if (score > 0) {
+    const dur = Math.round(20 + score * 6)
+    s.tournBuffTimer = Math.min(TOURN_BUFF_MAX, s.tournBuffTimer + dur) // wins bank more time
+    s.tournLast = `${STRATEGIES[you]} won — route optimization +${dur}s (×1.5 throughput).`
+  } else {
+    s.tournLast = `${STRATEGIES[you]} lost the field — no boost. Read the ring next time.`
+  }
   s.tournField = null
   s.tournCooldown = TOURN_COOLDOWN
 }

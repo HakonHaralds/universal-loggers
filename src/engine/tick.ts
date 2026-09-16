@@ -166,15 +166,18 @@ export interface SwarmRates {
   loggersPerSec: number
 }
 
+export const TOURN_BUFF_MULT = 1.5
+
 export function swarmRates(s: GameState): SwarmRates {
   const p = powerState(s)
+  const buff = s.tournBuffTimer > 0 ? TOURN_BUFF_MULT : 1
   return {
     supplyMW: p.solarNow,
     demandMW: p.demandMW,
     eff: p.eff,
-    harvestPerSec: s.harvesters * 1000 * s.harvestMult * p.eff,
-    setsPerSec: s.fabs * 100 * s.fabMult * p.eff,
-    loggersPerSec: s.assemblers * 2000 * s.asmMult * p.eff,
+    harvestPerSec: s.harvesters * 1000 * s.harvestMult * p.eff * buff,
+    setsPerSec: s.fabs * 100 * s.fabMult * p.eff * buff,
+    loggersPerSec: s.assemblers * 2000 * s.asmMult * p.eff * buff,
   }
 }
 
@@ -220,9 +223,10 @@ const EXPLORE_SATURATION = 1e16
 
 function stepProbes(s: GameState, dt: number) {
   const a = s.alloc
+  const buff = s.tournBuffTimer > 0 ? TOURN_BUFF_MULT : 1
   if (s.otaCooldown > 0) s.otaCooldown = Math.max(0, s.otaCooldown - dt)
   if (s.probes > 0) {
-    const growth = s.probes * 0.004 * a.rep * dt
+    const growth = s.probes * 0.004 * a.rep * buff * dt
     const drift = growth * s.driftFrac
     s.probes += growth - drift
     s.rogues += drift + s.rogues * 0.004 * dt
@@ -242,7 +246,7 @@ function stepProbes(s: GameState, dt: number) {
     const ceiling = exploreCeiling(s)
     const purity = s.probes / (s.probes + s.rogues + 1)
     const saturation = s.probes / (s.probes + EXPLORE_SATURATION)
-    s.explored = Math.min(ceiling, s.explored + saturation * 0.0005 * a.log * purity * dt)
+    s.explored = Math.min(ceiling, s.explored + saturation * 0.0005 * a.log * purity * buff * dt)
   }
 
   s.battleTimer -= dt
@@ -303,6 +307,7 @@ export function step(s: GameState, dt: number) {
   if (s.phase >= 2) {
     s.clock += dt
     if (s.tournCooldown > 0) s.tournCooldown = Math.max(0, s.tournCooldown - dt)
+    if (s.tournBuffTimer > 0) s.tournBuffTimer = Math.max(0, s.tournBuffTimer - dt)
     stepSwarm(s, dt)
   }
   if (s.phase === 3) stepProbes(s, dt)
