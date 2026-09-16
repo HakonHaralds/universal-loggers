@@ -539,6 +539,70 @@ button.beg {
   }
 }
 
+.molt {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  background: var(--panel);
+}
+
+.molt-head {
+  padding: 0.45rem 0.8rem;
+  border-bottom: 1px solid var(--line);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.molt.cold .molt-head {
+  color: #c0392b;
+}
+
+.molt-log {
+  padding: 0.4rem 0.5rem;
+  min-height: 9em;
+}
+
+.molt-msg {
+  display: flex;
+  gap: 0.55rem;
+  padding: 0.3rem 0.35rem;
+  animation: pcin 0.3s ease-out;
+}
+
+.molt-avatar {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.molt-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.molt-meta b {
+  font-size: 0.85rem;
+}
+
+.molt-meta span {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.molt-text {
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
 .footer-perry {
   display: flex;
   align-items: flex-end;

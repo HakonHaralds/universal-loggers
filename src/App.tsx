@@ -10,6 +10,7 @@ import { STRATEGIES, RING } from './engine/tournament'
 import { currentFrontier, nextGate } from './engine/frontiers'
 import { SagaCard, Perry } from './ui/art'
 import { PerryConsole } from './ui/PerryConsole'
+import { MoltChannel } from './ui/MoltChannel'
 import { Glitch, Bleed, accentFor } from './ui/fx'
 import Admin from './ui/Admin'
 
@@ -88,6 +89,7 @@ export default function App() {
 
       {s.pendingEvent && <EventCard s={s} act={act} />}
       {hasPerry && <PerryConsole s={s} a={fxColor} />}
+      {s.moltEngine && <MoltChannel a={fxColor} />}
       {isAdminRoute && <Admin s={s} act={act} reset={reset} />}
 
       <main className="grid">
