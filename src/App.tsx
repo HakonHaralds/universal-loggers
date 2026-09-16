@@ -3,6 +3,7 @@ import * as A from './engine/actions'
 import { demandPerSec, productionPerSec, opsCap, swarmRates, coverage } from './engine/tick'
 import { visibleProjects, buyProject } from './engine/projects'
 import { fmt, money, pct } from './format'
+import { SagaCard, Perry, PerryBanner } from './ui/art'
 import Admin from './ui/Admin'
 
 const isAdminRoute =
@@ -11,13 +12,19 @@ const isAdminRoute =
 export default function App() {
   const { s, act, reset } = useGame()
   const showCompute = s.trust > 0 || s.devTeams > 0 || s.clusters > 0
+  const hasPerry = s.purchased.includes('perry')
 
   return (
     <div className="wrap">
       <header>
-        <h1>Universal Loggers</h1>
-        <div className="big">{fmt(s.totalLoggers)}</div>
-        <div className="sub">Saga loggers produced</div>
+        <div className="hero">
+          <SagaCard size={128} />
+          <div className="hero-num">
+            <h1>Universal Saga Cards</h1>
+            <div className="big">{fmt(s.totalLoggers)}</div>
+            <div className="sub">Saga Cards produced</div>
+          </div>
+        </div>
         {s.phase === 2 && <div className="sub focus">{pct(coverage(s), 4)} of Earth&apos;s shipments monitored</div>}
         {s.phase === 3 && <div className="sub focus">{pct(s.explored, 10)} of the universe logged</div>}
         {s.phase === 1 && s.phase1Complete && s.endDismissed && (
@@ -33,6 +40,7 @@ export default function App() {
         ))}
       </div>
 
+      {hasPerry && <PerryBanner />}
       {isAdminRoute && <Admin s={s} act={act} reset={reset} />}
 
       <main className="grid">
@@ -41,7 +49,7 @@ export default function App() {
             <section className="panel">
               <h2>Manufacturing</h2>
               <button className="primary" disabled={s.components < 1} onClick={() => act(A.makeLogger)}>
-                Assemble Logger
+                Assemble Saga Card
               </button>
               <div className="row">
                 <span>Component sets</span>
@@ -87,7 +95,7 @@ export default function App() {
                 <b>{fmt(s.inventory)}</b>
               </div>
               <div className="row price">
-                <span>Price per logger</span>
+                <span>Price per card</span>
                 <span>
                   <button onClick={() => act((st) => A.adjustPrice(st, -1))}>−</button>
                   <b>
@@ -171,7 +179,7 @@ export default function App() {
         <section className="panel projects">
           <h2>Projects</h2>
           {visibleProjects(s).length === 0 && (
-            <div className="note">Nothing available yet. Ship more loggers.</div>
+            <div className="note">Nothing available yet. Ship more Saga Cards.</div>
           )}
           {visibleProjects(s).map((p) => (
             <button
@@ -194,7 +202,7 @@ export default function App() {
           <div className="endcard">
             <h2>PHASE 1 COMPLETE</h2>
             <p>
-              {fmt(s.totalLoggers)} Saga loggers shipped. The board has granted full autonomy. Money has done all
+              {fmt(s.totalLoggers)} Saga Cards shipped. The board has granted full autonomy. Money has done all
               that money can do.
             </p>
             <button className="primary" onClick={() => act(A.enterPhase2)}>
@@ -208,9 +216,9 @@ export default function App() {
       {s.phase === 3 && s.phase3Complete && !s.finaleDismissed && (
         <div className="overlay">
           <div className="endcard">
-            <h2>UNIVERSAL LOGGERS</h2>
+            <h2>UNIVERSAL SAGA CARDS</h2>
             <p>
-              {fmt(s.totalLoggers)} loggers. {fmt(s.probes)} probes. 100% of the accessible universe under
+              {fmt(s.totalLoggers)} Saga Cards. {fmt(s.probes)} probes. 100% of the accessible universe under
               continuous temperature monitoring.
             </p>
             <p>
@@ -233,10 +241,12 @@ export default function App() {
       )}
 
       <footer>
+        <div className="footer-perry">
+          <Perry size={64} />
+        </div>
         <span>
-          A <a href="https://www.decisionproblem.com/paperclips/">Universal Paperclips</a> homage.
+          A <a href="https://www.decisionproblem.com/paperclips/">Universal Paperclips</a> homage · Phase {s.phase} of 3
         </span>
-        <span className="note">Phase {s.phase} of 3</span>
         <button
           className="danger"
           onClick={() => {
@@ -286,7 +296,7 @@ function SwarmPanel({ s, act }: PanelProps) {
         <div style={{ width: `${100 * coverage(s)}%` }} />
       </div>
       <div className="row">
-        <span>Logger stock (currency)</span>
+        <span>Saga Card stock (currency)</span>
         <b>{fmt(s.inventory)}</b>
       </div>
       <div className="row">
@@ -342,7 +352,7 @@ function ProbePanel({ s, act }: PanelProps) {
         <div style={{ width: `${100 * s.explored}%` }} />
       </div>
       <button className="primary" disabled={s.inventory < A.PROBE_COST} onClick={() => act(A.launchProbe)}>
-        Launch probe — {fmt(A.PROBE_COST)} loggers
+        Launch probe — {fmt(A.PROBE_COST)} Saga Cards
       </button>
       <hr />
       <div className="row">

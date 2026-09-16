@@ -24,16 +24,16 @@ export default function Admin({ s, act, reset }: Props) {
     <section className="panel admin">
       <h2>Admin / test console</h2>
       <div className="note">
-        phase {s.phase} · loggers {fmt(s.totalLoggers)} · inventory {fmt(s.inventory)} · ops {fmt(s.ops)}/
+        phase {s.phase} · Saga Cards {fmt(s.totalLoggers)} · inventory {fmt(s.inventory)} · ops {fmt(s.ops)}/
         {fmt(opsCap(s))} · innovation {fmt(s.innovation)} · probes {fmt(s.probes)} · explored{' '}
         {(s.explored * 100).toFixed(2)}%
       </div>
       <div className="admin-grid">
-        {cheat('+1M loggers', (st) => {
+        {cheat('+1M Saga Cards', (st) => {
           st.totalLoggers += 1e6
           st.inventory += 1e6
         })}
-        {cheat('+1B loggers', (st) => {
+        {cheat('+1B Saga Cards', (st) => {
           st.totalLoggers += 1e9
           st.inventory += 1e9
         })}

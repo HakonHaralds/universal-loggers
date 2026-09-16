@@ -108,7 +108,7 @@ export function enterPhase2(s: GameState) {
 
 // ---------- phase 3 ----------
 
-export const PROBE_COST = 1_000_000 // loggers per probe launch
+export const PROBE_COST = 1_000_000 // Saga Cards per probe launch
 
 export function launchProbe(s: GameState) {
   if (s.phase !== 3 || s.inventory < PROBE_COST) return

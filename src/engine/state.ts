@@ -2,7 +2,7 @@ import type { GameState } from './types'
 
 export const SAVE_KEY = 'universal-loggers-save-v1'
 
-export const EARTH_NEED = 8e9 // shipments on Earth wanting a logger
+export const EARTH_NEED = 8e9 // shipments on Earth wanting a Saga Card
 
 export function initialState(): GameState {
   return {
@@ -62,7 +62,7 @@ export function initialState(): GameState {
     purchased: [],
     seen: [],
     milestonesShown: [],
-    log: [{ id: 0, msg: 'Boot complete. Directive: manufacture and deploy Saga loggers.' }],
+    log: [{ id: 0, msg: 'Boot complete. Directive: manufacture and deploy Saga Cards.' }],
     logSeq: 1,
   }
 }
@@ -86,7 +86,6 @@ export function load(): GameState | null {
     if (!raw) return null
     const parsed = JSON.parse(raw) as Partial<GameState>
     if (parsed.v !== 1) return null
-    // merge over defaults so saves from older builds get new fields
     const base = initialState()
     return { ...base, ...parsed, alloc: { ...base.alloc, ...(parsed.alloc ?? {}) } }
   } catch {

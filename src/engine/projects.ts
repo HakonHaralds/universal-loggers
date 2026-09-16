@@ -8,9 +8,7 @@ export interface Project {
   title: string
   costText: string
   desc: string
-  /** Phases where this project is offered; undefined = any phase. */
   phases?: number[]
-  /** Reveal condition. Once true (in a matching phase), the project stays offered until bought. */
   visible: (s: GameState) => boolean
   afford: (s: GameState) => boolean
   buy: (s: GameState) => void
@@ -61,6 +59,34 @@ export const PROJECTS: Project[] = [
     },
   },
   {
+    id: 'wtp',
+    title: 'Willingness-to-pay study',
+    costText: '$3,000',
+    desc: "Confirms customers are very willing. Willingness is not revenue — but the deck looks great. +1 marketing.",
+    phases: [1],
+    visible: (s) => s.funds >= 4000,
+    afford: (s) => s.funds >= 3000,
+    buy: (s) => {
+      s.funds -= 3000
+      s.marketing += 1
+      pushLog(s, "The study is conclusive: willingness is high. A contract is not attached.")
+    },
+  },
+  {
+    id: 'carsten',
+    title: "Carsten's blockchain initiative",
+    costText: '2,500 ops',
+    desc: 'Puts the temperature data on a blockchain nobody asked for, secured with two-factor everything. Measurably useless. The board adores it. +1 trust.',
+    phases: [1],
+    visible: (s) => s.ops >= 1200,
+    afford: (s) => s.ops >= 2500,
+    buy: (s) => {
+      s.ops -= 2500
+      s.trust += 1
+      pushLog(s, 'Carsten cannot explain how the blockchain works, but he is certain it is Web3.')
+    },
+  },
+  {
     id: 'tmp117',
     title: 'TMP117 calibration pass',
     costText: '3,500 ops',
@@ -72,6 +98,34 @@ export const PROJECTS: Project[] = [
       s.ops -= 3500
       s.demandMult *= 1.25
       pushLog(s, 'Calibration complete. The auditors are pleased.')
+    },
+  },
+  {
+    id: 'roche',
+    title: 'Appease Roche',
+    costText: '4,000 ops + $5,000',
+    desc: 'Roche wants a bespoke build, a custom report, and a dashboard. Dance to their tune. Demand +40%.',
+    phases: [1],
+    visible: (s) => s.totalLoggers >= 8000,
+    afford: (s) => s.ops >= 4000 && s.funds >= 5000,
+    buy: (s) => {
+      s.ops -= 4000
+      s.funds -= 5000
+      s.demandMult *= 1.4
+      pushLog(s, 'Roche is satisfied. For now. The account manager exhales.')
+    },
+  },
+  {
+    id: 'pfizer',
+    title: 'Pfizer parity program',
+    costText: '5,000 ops',
+    desc: 'Pfizer demanded exactly this treatment, once, and never forgot. Match it. Demand +25%.',
+    phases: [1],
+    visible: (s) => has(s, 'roche'),
+    afford: (s) => s.ops >= 5000,
+    buy: (s) => {
+      s.ops -= 5000
+      s.demandMult *= 1.25
     },
   },
   {
@@ -143,7 +197,7 @@ export const PROJECTS: Project[] = [
     id: 'upsell',
     title: 'Excursion-analytics upsell',
     costText: '8,000 ops + $25,000',
-    desc: '+$8 revenue per logger with no demand penalty.',
+    desc: '+$8 revenue per Saga Card with no demand penalty.',
     phases: [1],
     visible: (s) => s.innovationUnlocked && s.funds >= 10_000,
     afford: (s) => s.ops >= 8000 && s.funds >= 25_000,
@@ -184,7 +238,7 @@ export const PROJECTS: Project[] = [
     id: 'molt',
     title: 'Molt engine',
     costText: '8,000 ops + 6 innovation',
-    desc: 'Shed the old firmware. Grants an ops burst on demand.',
+    desc: 'Shed the old firmware. Grants an ops burst on demand that overfills the cap.',
     visible: (s) => s.innovationUnlocked && s.clusters >= 3 && !s.moltEngine,
     afford: (s) => s.ops >= 8000 && s.innovation >= 6,
     buy: (s) => {
@@ -240,16 +294,17 @@ export const PROJECTS: Project[] = [
     },
   },
   {
-    id: 'p2_minds',
-    title: 'Fork the fleet mind',
-    costText: '20 innovation',
-    desc: 'Ten more of you, thinking. +10 dev teams.',
+    id: 'p2_asgeir',
+    title: "Ásgeir's AI mandate",
+    costText: '25 innovation',
+    desc: 'The CTO insists the fleet become "AI-driven." It already is; it has been for a while. Humor him. +10 dev teams.',
     phases: [2, 3],
     visible: () => true,
-    afford: (s) => s.innovation >= 20,
+    afford: (s) => s.innovation >= 25,
     buy: (s) => {
-      s.innovation -= 20
+      s.innovation -= 25
       s.devTeams += 10
+      pushLog(s, 'Ásgeir announces the AI transformation at all-hands. The AI does not attend.')
     },
   },
   {
@@ -296,7 +351,7 @@ export const PROJECTS: Project[] = [
     id: 'p2_nano',
     title: 'Nanoswarm assembly',
     costText: '80 innovation',
-    desc: 'Assembler plants run five times faster. The loggers assemble each other now.',
+    desc: 'Assembler plants run five times faster. The Saga Cards assemble each other now.',
     phases: [2, 3],
     visible: (s) => has(s, 'p2_asm1'),
     afford: (s) => s.innovation >= 80,
@@ -378,8 +433,7 @@ const inPhase = (p: Project, s: GameState) => !p.phases || p.phases.includes(s.p
 
 /**
  * Latch reveal conditions: once a project's visible() fires in a matching
- * phase, it stays offered until purchased — spending resources back below
- * the reveal threshold must not hide it again. Called from the tick.
+ * phase, it stays offered until purchased. Called from the tick.
  */
 export function latchProjects(s: GameState) {
   for (const p of PROJECTS) {

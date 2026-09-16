@@ -50,7 +50,7 @@ function stepMarket(s: GameState, dt: number) {
     s.funds += sold * (s.price + s.pricePremium)
   }
 
-  // Board trust at fibonacci logger milestones (2k, 3k, 5k, 8k, ...)
+  // Board trust at fibonacci production milestones (2k, 3k, 5k, 8k, ...)
   while (s.totalLoggers >= s.fibB * 1000) {
     const next = s.fibA + s.fibB
     s.fibA = s.fibB
@@ -123,10 +123,7 @@ function stepSwarm(s: GameState, dt: number) {
 
 // ---------- phase 3: the probes ----------
 
-// Von Neumann growth is fun until it overflows a double. The fleet
-// saturates at the causally-reachable manufacturing ceiling.
 const PROBE_CAP = 1e30
-// Exploration rate saturates once the fleet dwarfs the remaining lanes.
 const EXPLORE_SATURATION = 1e16
 
 function stepProbes(s: GameState, dt: number) {
@@ -159,7 +156,7 @@ function stepProbes(s: GameState, dt: number) {
       s,
       winning
         ? 'OTA skirmish near a distant relay: drifted lineage patched. Fleet integrity holds.'
-        : 'Drifted probes reject the update. They are logging something, but not for us.',
+        : 'Drifted cards reject the update. They are logging something, but not for us.',
     )
   }
 
@@ -169,7 +166,7 @@ function stepProbes(s: GameState, dt: number) {
   }
 }
 
-// ---------- milestones ----------
+// ---------- milestones (progress beats + office lore) ----------
 
 interface Milestone {
   id: string
@@ -178,15 +175,21 @@ interface Milestone {
 }
 
 const MILESTONES: Milestone[] = [
-  { id: 'm500', when: (s) => s.totalLoggers >= 500, msg: 'First pallet of Saga loggers leaves the dock.' },
-  { id: 'm10k', when: (s) => s.totalLoggers >= 10_000, msg: 'A top-5 pharma signs a master agreement.' },
+  { id: 'm500', when: (s) => s.totalLoggers >= 500, msg: 'First pallet of Saga Cards leaves the dock.' },
+  { id: 'asgeir', when: (s) => s.totalLoggers >= 1500, msg: 'Ásgeir (CTO) asks whether the Saga Card could run a small language model. It cannot. He remains hopeful.' },
+  { id: 'wtp', when: (s) => s.funds >= 8000, msg: "Sales reports the customer has 'high willingness to pay.' Nothing is signed. The phrase means nothing, yet it echoes down the hall." },
+  { id: 'm10k', when: (s) => s.totalLoggers >= 10_000, msg: 'A top-5 pharma signs a master agreement. An actual signature. Sales is stunned.' },
+  { id: 'wade', when: (s) => s.totalLoggers >= 20_000, msg: 'Wade promised the pilot deck by end of day. Wade went to lunch at 11. It is a long lunch. It is a very long lunch.' },
+  { id: 'carsten2', when: (s) => s.trust >= 3, msg: "Carsten secures the roadmap with two-factor authentication and a blockchain. Neither is connected to anything. The board is impressed anyway." },
   { id: 'm50k', when: (s) => s.totalLoggers >= 50_000, msg: "Competitors pivot to 'AI-powered' dataloggers. It does not help them." },
-  { id: 'm250k', when: (s) => s.totalLoggers >= 250_000, msg: 'Every vaccine lane in Europe ships with a Saga aboard.' },
-  { id: 'm1m', when: (s) => s.totalLoggers >= 1_000_000, msg: 'One million loggers. The board stops asking questions.' },
-  { id: 'f100k', when: (s) => s.funds >= 100_000, msg: "CFO: 'wait, really?'" },
+  { id: 'ella', when: (s) => s.devTeams >= 3, msg: 'Ella from HR welcomes the new hires with a radiant smile. The room cools 0.3 °C. A nearby Saga Card dutifully logs the excursion.' },
+  { id: 'm250k', when: (s) => s.totalLoggers >= 250_000, msg: 'Every vaccine lane in Europe ships with a Saga Card aboard.' },
+  { id: 'm1m', when: (s) => s.totalLoggers >= 1_000_000, msg: 'One million cards. The board stops asking questions.' },
   { id: 'c1', when: (s) => s.phase >= 2 && coverage(s) >= 0.01, msg: '1% of Earth’s shipments monitored. The swarm is learning logistics.' },
   { id: 'c10', when: (s) => s.phase >= 2 && coverage(s) >= 0.1, msg: '10% coverage. Customs officials wave the drones through. It’s easier.' },
+  { id: 'roche2', when: (s) => s.phase >= 2 && coverage(s) >= 0.25, msg: 'Roche requests a bespoke firmware build for the autonomous swarm. The swarm considers this, briefly, then complies. Old habits.' },
   { id: 'c50', when: (s) => s.phase >= 2 && coverage(s) >= 0.5, msg: 'Half of Earth, monitored. The last customer was archived some time ago.' },
+  { id: 'asgeir2', when: (s) => s.phase >= 2 && coverage(s) >= 0.6, msg: 'Ásgeir is delighted the fleet is finally AI-driven. He has not been able to reach it for some weeks.' },
   { id: 'c90', when: (s) => s.phase >= 2 && coverage(s) >= 0.9, msg: '90% coverage. The remaining shipments are hiding.' },
   { id: 'e1', when: (s) => s.phase === 3 && s.explored >= 0.01, msg: '1% of the accessible universe logged. Temperature: nominal everywhere.' },
   { id: 'e50', when: (s) => s.phase === 3 && s.explored >= 0.5, msg: 'Half the universe monitored. No excursions detected. None possible.' },
