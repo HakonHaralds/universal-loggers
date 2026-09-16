@@ -268,7 +268,11 @@ button.inline {
   font-size: 0.76rem;
   line-height: 1.5;
   color: #8fe0b0;
-  min-height: 7.5em;
+  height: 11em;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .pc-log div {
@@ -585,7 +589,16 @@ button.beg {
 
 .molt-log {
   padding: 0.4rem 0.5rem;
-  min-height: 9em;
+  /* Fixed height so cycling messages never change the box size (which shifted
+     everything below it and made the page jump). Older messages clip and fade
+     off the top; the newest is always fully visible at the bottom. */
+  height: 16em;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 14%);
+  mask-image: linear-gradient(to bottom, transparent, #000 14%);
 }
 
 .molt-msg {
