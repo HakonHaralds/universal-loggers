@@ -229,11 +229,12 @@ export function complianceReview(s: GameState) {
 }
 
 export const TOURN_COST = 5000
+export const TOURN_COOLDOWN = 12
 
 export function startTournament(s: GameState) {
-  if (s.ops < TOURN_COST || s.tournField) return
+  if (s.ops < TOURN_COST || s.tournField || s.tournCooldown > 0) return
   s.ops -= TOURN_COST
-  s.tournField = [0, 0, 0].map(() => Math.floor(Math.random() * 4))
+  s.tournField = [0, 0, 0, 0, 0].map(() => Math.floor(Math.random() * 4))
   s.tournLast = null
 }
 
@@ -241,10 +242,14 @@ export function playTournament(s: GameState, you: number) {
   if (!s.tournField) return
   let score = 0
   for (const opp of s.tournField) score += payoff(you, opp) + (Math.random() - 0.5)
-  const reward = Math.max(0, Math.round(score * 1.5))
+  const reward = Math.max(0, Math.round(score * 4))
   s.innovation += reward
-  s.tournLast = `${STRATEGIES[you]}: scored ${score.toFixed(1)} → +${reward} innovation`
+  s.tournLast =
+    reward > 0
+      ? `${STRATEGIES[you]} won the field — +${reward} innovation.`
+      : `${STRATEGIES[you]} lost the field — no innovation. Read the ring next time.`
   s.tournField = null
+  s.tournCooldown = TOURN_COOLDOWN
 }
 
 export function enterPhase3(s: GameState) {

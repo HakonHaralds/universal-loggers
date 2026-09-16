@@ -462,27 +462,32 @@ function TournamentPanel({ s, act }: PanelProps) {
   return (
     <section className="panel">
       <h2>Logistics Tournament</h2>
-      <div className="note">Each strategy beats the next in the ring: {RING}</div>
+      <div className="note">Spend ops, out-route the field, win innovation. The ring: {RING}</div>
       {!field && (
-        <button disabled={s.ops < A.TOURN_COST} onClick={() => act(A.startTournament)}>
-          New tournament — {fmt(A.TOURN_COST)} ops
+        <button
+          disabled={s.ops < A.TOURN_COST || s.tournCooldown > 0}
+          onClick={() => act(A.startTournament)}
+        >
+          {s.tournCooldown > 0
+            ? `Next tournament in ${Math.ceil(s.tournCooldown)}s`
+            : `New tournament — ${fmt(A.TOURN_COST)} ops`}
         </button>
       )}
       {field && (
         <>
           <div className="row">
-            <span>Opponent field</span>
-            <b>{field.map((i) => STRATEGIES[i]).join(', ')}</b>
+            <span>Field of 5</span>
+            <b>{field.map((i) => STRATEGIES[i].split('-')[0]).join(', ')}</b>
           </div>
-          <div className="note">Pick your strategy to beat the most of them:</div>
+          <div className="note">Pick the strategy that beats the most of them:</div>
           {STRATEGIES.map((name, i) => (
-            <button key={i} onClick={() => act((st) => A.playTournament(st, i))}>
+            <button key={i} className="primary" onClick={() => act((st) => A.playTournament(st, i))}>
               {name}
             </button>
           ))}
         </>
       )}
-      {s.tournLast && <div className="note">{s.tournLast}</div>}
+      {s.tournLast && !field && <div className="note">{s.tournLast}</div>}
     </section>
   )
 }

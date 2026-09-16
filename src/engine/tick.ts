@@ -185,6 +185,7 @@ export function coverage(s: GameState): number {
 
 function stepOversight(s: GameState, dt: number) {
   if (s.containmentTimer > 0) s.containmentTimer = Math.max(0, s.containmentTimer - dt)
+  if (s.tournCooldown > 0) s.tournCooldown = Math.max(0, s.tournCooldown - dt)
   // Oversight climbs with how far over the line the AI has gone.
   s.oversight = Math.min(100, s.oversight + (0.05 + autonomy(s) * 0.18) * dt)
   if (!s.pendingEvent) {
