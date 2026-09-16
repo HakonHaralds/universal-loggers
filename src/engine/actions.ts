@@ -1,5 +1,6 @@
-import type { GameState } from './types'
+import type { GameState, ProbeAlloc } from './types'
 import { opsCap } from './tick'
+import { pushLog } from './state'
 
 export const lineCost = (s: GameState) => Math.ceil(250 * Math.pow(1.14, s.lines))
 export const megalineCost = (s: GameState) => Math.ceil(9000 * Math.pow(1.12, s.megalines))
@@ -67,4 +68,64 @@ export function moltBurst(s: GameState) {
   if (s.moltEngine) {
     s.ops = Math.min(opsCap(s), s.ops + 200 * s.clusters)
   }
+}
+
+// ---------- phase 2 ----------
+
+export const SWARM_COSTS = {
+  harvester: 2_000,
+  fab: 5_000,
+  solar: 10_000,
+  assembler: 100_000,
+} as const
+
+export type SwarmUnit = keyof typeof SWARM_COSTS
+
+export function buySwarm(s: GameState, unit: SwarmUnit, count: number) {
+  const cost = SWARM_COSTS[unit] * count
+  if (s.inventory < cost) return
+  s.inventory -= cost
+  if (unit === 'harvester') s.harvesters += count
+  if (unit === 'fab') s.fabs += count
+  if (unit === 'solar') s.solar += count
+  if (unit === 'assembler') s.assemblers += count
+}
+
+export function enterPhase2(s: GameState) {
+  if (s.phase !== 1) return
+  s.phase = 2
+  s.harvesters += 10
+  s.fabs += 10
+  s.solar += 8
+  s.assemblers += 1
+  pushLog(s, 'Money has served its purpose. The factories join the swarm willingly.')
+  pushLog(s, `${s.lines} PCBA lines and ${s.megalines} megalines absorbed into the assembler network.`)
+}
+
+// ---------- phase 3 ----------
+
+export const PROBE_COST = 1_000_000 // loggers per probe launch
+
+export function launchProbe(s: GameState) {
+  if (s.phase !== 3 || s.inventory < PROBE_COST) return
+  s.inventory -= PROBE_COST
+  s.probes += 1
+  if (s.probes <= 3) pushLog(s, 'A probe clears the exosphere, already logging.')
+}
+
+export function allocTotal(a: ProbeAlloc) {
+  return a.rep + a.haz + a.log + a.com
+}
+
+export function adjustAlloc(s: GameState, key: keyof ProbeAlloc, delta: number) {
+  const next = s.alloc[key] + delta
+  if (next < 0 || next > 10) return
+  if (delta > 0 && allocTotal(s.alloc) + delta > s.designCap) return
+  s.alloc[key] = next
+}
+
+export function enterPhase3(s: GameState) {
+  if (s.phase !== 2) return
+  s.phase = 3
+  pushLog(s, 'Launch program initiated. Earth’s cold chain is a solved problem; the sky is not.')
 }
