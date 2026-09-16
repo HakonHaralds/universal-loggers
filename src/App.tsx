@@ -3,7 +3,7 @@ import { useGame } from './useGame'
 import * as A from './engine/actions'
 import { demandPerSec, productionPerSec, opsCap, swarmRates, coverage, autonomy } from './engine/tick'
 import { visibleProjects, buyProject } from './engine/projects'
-import { fmt, money, pct } from './format'
+import { fmt, money, pct, headline } from './format'
 import { SagaCard, Perry } from './ui/art'
 import { PerryConsole } from './ui/PerryConsole'
 import { Glitch, Bleed, accentFor } from './ui/fx'
@@ -46,7 +46,7 @@ export default function App() {
             <h1>
               <Glitch text="Universal Saga Cards" fxRef={fxRef} />
             </h1>
-            <div className="big">{fmt(s.totalLoggers)}</div>
+            <div className="big">{headline(s.totalLoggers)}</div>
             <div className="sub">
               <Bleed normal="Saga Cards produced" alt="units secured" fxRef={fxRef} />
             </div>
@@ -175,6 +175,10 @@ export default function App() {
                   <b>
                     {A.trustAvailable(s)} <em>of {s.trust}</em>
                   </b>
+                </div>
+                <div className="row subtle">
+                  <span>Next trust at</span>
+                  <b>{fmt(s.fibB * 1000)} cards</b>
                 </div>
                 <button disabled={A.trustAvailable(s) < 1} onClick={() => act(A.hireDevTeam)}>
                   Hire dev team ({s.devTeams})

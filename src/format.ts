@@ -13,6 +13,14 @@ export function fmt(n: number): string {
   return `${v.toFixed(2)} ${SUFFIXES[i]}`
 }
 
+// Full comma-separated count for the headline, so it visibly increments at
+// any scale (fmt's 2-digit abbreviation looks frozen once you pass a million).
+// Falls back to compact only at absurd cosmic magnitudes.
+export function headline(n: number): string {
+  if (n < 1e15) return Math.floor(n).toLocaleString('en-US')
+  return fmt(n)
+}
+
 export function money(n: number): string {
   if (n < 1e6) return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   return '$' + fmt(n)

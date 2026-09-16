@@ -264,7 +264,7 @@ export const PROJECTS: Project[] = [
     id: 'upsell',
     title: 'Excursion-analytics upsell',
     costText: '8,000 ops + $25,000',
-    desc: '+$8 revenue per Saga Card with no demand penalty.',
+    desc: '+$8 revenue per card, added after the demand calc — so unlike a $8 price hike (which would cut demand ~20%), this costs you no sales.',
     phases: [1],
     visible: (s) => s.innovationUnlocked && s.funds >= 10_000,
     afford: (s) => s.ops >= 8000 && s.funds >= 25_000,
