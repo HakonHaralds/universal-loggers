@@ -59,6 +59,7 @@ export function initialState(): GameState {
     endDismissed: false,
     finaleDismissed: false,
     purchased: [],
+    seen: [],
     milestonesShown: [],
     log: [{ id: 0, msg: 'Boot complete. Directive: manufacture and deploy Saga loggers.' }],
     logSeq: 1,

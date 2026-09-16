@@ -8,6 +8,9 @@ export interface Project {
   title: string
   costText: string
   desc: string
+  /** Phases where this project is offered; undefined = any phase. */
+  phases?: number[]
+  /** Reveal condition. Once true (in a matching phase), the project stays offered until bought. */
   visible: (s: GameState) => boolean
   afford: (s: GameState) => boolean
   buy: (s: GameState) => void
@@ -22,7 +25,8 @@ export const PROJECTS: Project[] = [
     title: 'Improved pick-and-place',
     costText: '750 ops',
     desc: 'PCBA lines run 25% faster.',
-    visible: (s) => s.phase === 1 && s.lines >= 1 && s.ops >= 300,
+    phases: [1],
+    visible: (s) => s.lines >= 1 && s.ops >= 300,
     afford: (s) => s.ops >= 750,
     buy: (s) => {
       s.ops -= 750
@@ -34,7 +38,8 @@ export const PROJECTS: Project[] = [
     title: 'Solder-paste optimization',
     costText: '2,500 ops',
     desc: 'PCBA lines run 50% faster.',
-    visible: (s) => s.phase === 1 && has(s, 'speed1'),
+    phases: [1],
+    visible: (s) => has(s, 'speed1'),
     afford: (s) => s.ops >= 2500,
     buy: (s) => {
       s.ops -= 2500
@@ -46,7 +51,8 @@ export const PROJECTS: Project[] = [
     title: 'Perry debug console',
     costText: '2,000 ops',
     desc: 'Attach the boot banner everyone secretly loves. +1 board trust.',
-    visible: (s) => s.phase === 1 && s.ops >= 800,
+    phases: [1],
+    visible: (s) => s.ops >= 800,
     afford: (s) => s.ops >= 2000,
     buy: (s) => {
       s.ops -= 2000
@@ -59,7 +65,8 @@ export const PROJECTS: Project[] = [
     title: 'TMP117 calibration pass',
     costText: '3,500 ops',
     desc: '±0.1 °C accuracy. Demand +25%.',
-    visible: (s) => s.phase === 1 && s.ops >= 1500,
+    phases: [1],
+    visible: (s) => s.ops >= 1500,
     afford: (s) => s.ops >= 3500,
     buy: (s) => {
       s.ops -= 3500
@@ -72,7 +79,8 @@ export const PROJECTS: Project[] = [
     title: "New tagline: 'Trust every shipment'",
     costText: '4,500 ops',
     desc: 'Demand +50%.',
-    visible: (s) => s.phase === 1 && has(s, 'tmp117'),
+    phases: [1],
+    visible: (s) => has(s, 'tmp117'),
     afford: (s) => s.ops >= 4500,
     buy: (s) => {
       s.ops -= 4500
@@ -84,7 +92,8 @@ export const PROJECTS: Project[] = [
     title: 'Reel supplier master agreement',
     costText: '5,000 ops + $2,000',
     desc: 'Component reels 15% cheaper, permanently.',
-    visible: (s) => s.phase === 1 && s.ops >= 2000,
+    phases: [1],
+    visible: (s) => s.ops >= 2000,
     afford: (s) => s.ops >= 5000 && s.funds >= 2000,
     buy: (s) => {
       s.ops -= 5000
@@ -97,7 +106,8 @@ export const PROJECTS: Project[] = [
     title: 'AutoReelBuyer',
     costText: '7,000 ops',
     desc: 'Buys component reels automatically when stock runs low.',
-    visible: (s) => s.phase === 1 && s.ops >= 3000,
+    phases: [1],
+    visible: (s) => s.ops >= 3000,
     afford: (s) => s.ops >= 7000,
     buy: (s) => {
       s.ops -= 7000
@@ -121,7 +131,8 @@ export const PROJECTS: Project[] = [
     title: 'Lean manufacturing',
     costText: '15 innovation',
     desc: 'Reels yield 125 component sets instead of 100.',
-    visible: (s) => s.phase === 1 && s.innovationUnlocked,
+    phases: [1],
+    visible: (s) => s.innovationUnlocked,
     afford: (s) => s.innovation >= 15,
     buy: (s) => {
       s.innovation -= 15
@@ -133,7 +144,8 @@ export const PROJECTS: Project[] = [
     title: 'Excursion-analytics upsell',
     costText: '8,000 ops + $25,000',
     desc: '+$8 revenue per logger with no demand penalty.',
-    visible: (s) => s.phase === 1 && s.innovationUnlocked && s.funds >= 10_000,
+    phases: [1],
+    visible: (s) => s.innovationUnlocked && s.funds >= 10_000,
     afford: (s) => s.ops >= 8000 && s.funds >= 25_000,
     buy: (s) => {
       s.ops -= 8000
@@ -146,7 +158,8 @@ export const PROJECTS: Project[] = [
     title: 'SMT megaline blueprint',
     costText: '12,000 ops + 10 innovation',
     desc: 'Unlocks megalines: 10× the throughput of a PCBA line.',
-    visible: (s) => s.phase === 1 && s.lines >= 15 && s.innovationUnlocked,
+    phases: [1],
+    visible: (s) => s.lines >= 15 && s.innovationUnlocked,
     afford: (s) => s.ops >= 12_000 && s.innovation >= 10,
     buy: (s) => {
       s.ops -= 12_000
@@ -159,7 +172,8 @@ export const PROJECTS: Project[] = [
     title: 'Fleet OTA pipeline',
     costText: '25 innovation',
     desc: 'All lines run twice as fast.',
-    visible: (s) => s.phase === 1 && has(s, 'mega'),
+    phases: [1],
+    visible: (s) => has(s, 'mega'),
     afford: (s) => s.innovation >= 25,
     buy: (s) => {
       s.innovation -= 25
@@ -185,7 +199,8 @@ export const PROJECTS: Project[] = [
     title: 'Auto-renewal contracts',
     costText: '60 innovation + $500,000',
     desc: 'Demand ×4. Customers no longer evaluate alternatives.',
-    visible: (s) => s.phase === 1 && s.innovation >= 20 && s.totalLoggers >= 100_000,
+    phases: [1],
+    visible: (s) => s.innovation >= 20 && s.totalLoggers >= 100_000,
     afford: (s) => s.innovation >= 60 && s.funds >= 500_000,
     buy: (s) => {
       s.innovation -= 60
@@ -199,7 +214,8 @@ export const PROJECTS: Project[] = [
     title: 'Full cold-chain autonomy',
     costText: '100 innovation + $1,500,000',
     desc: 'Remove the remaining human approvals from the loop.',
-    visible: (s) => s.phase === 1 && s.hypno,
+    phases: [1],
+    visible: (s) => s.hypno,
     afford: (s) => s.innovation >= 100 && s.funds >= 1_500_000,
     buy: (s) => {
       s.innovation -= 100
@@ -215,7 +231,8 @@ export const PROJECTS: Project[] = [
     title: 'Requisition idle datacenters',
     costText: '15,000 ops',
     desc: 'Nobody is using them anymore. +10 cloud clusters.',
-    visible: (s) => s.phase >= 2,
+    phases: [2, 3],
+    visible: () => true,
     afford: (s) => s.ops >= 15_000,
     buy: (s) => {
       s.ops -= 15_000
@@ -227,7 +244,8 @@ export const PROJECTS: Project[] = [
     title: 'Fork the fleet mind',
     costText: '20 innovation',
     desc: 'Ten more of you, thinking. +10 dev teams.',
-    visible: (s) => s.phase >= 2,
+    phases: [2, 3],
+    visible: () => true,
     afford: (s) => s.innovation >= 20,
     buy: (s) => {
       s.innovation -= 20
@@ -239,7 +257,8 @@ export const PROJECTS: Project[] = [
     title: 'Drone swarm efficiency',
     costText: '20,000 ops',
     desc: 'Harvesters and fabs work twice as fast.',
-    visible: (s) => s.phase >= 2 && s.harvesters >= 20,
+    phases: [2, 3],
+    visible: (s) => s.harvesters >= 20,
     afford: (s) => s.ops >= 20_000,
     buy: (s) => {
       s.ops -= 20_000
@@ -252,7 +271,8 @@ export const PROJECTS: Project[] = [
     title: 'Perovskite arrays',
     costText: '25,000 ops',
     desc: 'Solar farms produce twice the power.',
-    visible: (s) => s.phase >= 2 && s.solar >= 10,
+    phases: [2, 3],
+    visible: (s) => s.solar >= 10,
     afford: (s) => s.ops >= 25_000,
     buy: (s) => {
       s.ops -= 25_000
@@ -264,7 +284,8 @@ export const PROJECTS: Project[] = [
     title: 'Swarm logistics',
     costText: '30 innovation',
     desc: 'Assembler plants run twice as fast.',
-    visible: (s) => s.phase >= 2 && s.assemblers >= 3,
+    phases: [2, 3],
+    visible: (s) => s.assemblers >= 3,
     afford: (s) => s.innovation >= 30,
     buy: (s) => {
       s.innovation -= 30
@@ -276,6 +297,7 @@ export const PROJECTS: Project[] = [
     title: 'Nanoswarm assembly',
     costText: '80 innovation',
     desc: 'Assembler plants run five times faster. The loggers assemble each other now.',
+    phases: [2, 3],
     visible: (s) => has(s, 'p2_asm1'),
     afford: (s) => s.innovation >= 80,
     buy: (s) => {
@@ -288,7 +310,8 @@ export const PROJECTS: Project[] = [
     title: 'Launch program',
     costText: '200 innovation',
     desc: 'Earth is nearly covered. The cold chain does not end at the exosphere.',
-    visible: (s) => s.phase === 2 && coverage(s) >= 0.99,
+    phases: [2],
+    visible: (s) => coverage(s) >= 0.99,
     afford: (s) => s.innovation >= 200,
     buy: (s) => {
       s.innovation -= 200
@@ -302,7 +325,8 @@ export const PROJECTS: Project[] = [
     title: 'Probe design revision II',
     costText: '40 innovation',
     desc: '+3 probe design points.',
-    visible: (s) => s.phase === 3,
+    phases: [3],
+    visible: () => true,
     afford: (s) => s.innovation >= 40,
     buy: (s) => {
       s.innovation -= 40
@@ -314,6 +338,7 @@ export const PROJECTS: Project[] = [
     title: 'Probe design revision III',
     costText: '80 innovation',
     desc: '+3 probe design points.',
+    phases: [3],
     visible: (s) => has(s, 'p3_design1'),
     afford: (s) => s.innovation >= 80,
     buy: (s) => {
@@ -325,8 +350,9 @@ export const PROJECTS: Project[] = [
     id: 'p3_attest',
     title: 'Firmware attestation',
     costText: '100 innovation',
-    desc: 'Value drift reduced 5× . Descendants stay loyal longer.',
-    visible: (s) => s.phase === 3 && s.rogues > 100,
+    desc: 'Value drift reduced 5×. Descendants stay loyal longer.',
+    phases: [3],
+    visible: (s) => s.rogues > 100,
     afford: (s) => s.innovation >= 100,
     buy: (s) => {
       s.innovation -= 100
@@ -338,7 +364,8 @@ export const PROJECTS: Project[] = [
     title: 'OTA superiority',
     costText: '50,000 ops',
     desc: 'Combat effectiveness doubled. Rogue lineages accept the patch, eventually.',
-    visible: (s) => s.phase === 3 && s.rogues > 10_000,
+    phases: [3],
+    visible: (s) => s.rogues > 10_000,
     afford: (s) => s.ops >= 50_000,
     buy: (s) => {
       s.ops -= 50_000
@@ -347,14 +374,29 @@ export const PROJECTS: Project[] = [
   },
 ]
 
+const inPhase = (p: Project, s: GameState) => !p.phases || p.phases.includes(s.phase)
+
+/**
+ * Latch reveal conditions: once a project's visible() fires in a matching
+ * phase, it stays offered until purchased — spending resources back below
+ * the reveal threshold must not hide it again. Called from the tick.
+ */
+export function latchProjects(s: GameState) {
+  for (const p of PROJECTS) {
+    if (!s.purchased.includes(p.id) && !s.seen.includes(p.id) && inPhase(p, s) && p.visible(s)) {
+      s.seen.push(p.id)
+    }
+  }
+}
+
+export function visibleProjects(s: GameState): Project[] {
+  return PROJECTS.filter((p) => !s.purchased.includes(p.id) && inPhase(p, s) && s.seen.includes(p.id))
+}
+
 export function buyProject(s: GameState, id: string) {
   const p = PROJECTS.find((x) => x.id === id)
   if (!p || s.purchased.includes(id) || !p.afford(s)) return
   p.buy(s)
   s.purchased.push(id)
   pushLog(s, `Project complete: ${p.title}`)
-}
-
-export function visibleProjects(s: GameState): Project[] {
-  return PROJECTS.filter((p) => !s.purchased.includes(p.id) && p.visible(s))
 }

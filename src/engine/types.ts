@@ -72,6 +72,7 @@ export interface GameState {
   endDismissed: boolean
   finaleDismissed: boolean
   purchased: string[]
+  seen: string[]
   milestonesShown: string[]
   log: LogEntry[]
   logSeq: number

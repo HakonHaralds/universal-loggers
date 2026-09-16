@@ -1,5 +1,6 @@
 import type { GameState } from './types'
 import { pushLog, EARTH_NEED } from './state'
+import { latchProjects } from './projects'
 
 // ---------- phase 1: the business ----------
 
@@ -199,4 +200,6 @@ export function step(s: GameState, dt: number) {
       pushLog(s, m.msg)
     }
   }
+
+  latchProjects(s)
 }
