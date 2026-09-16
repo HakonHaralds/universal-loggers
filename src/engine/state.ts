@@ -36,6 +36,7 @@ export function initialState(): GameState {
     innovation: 0,
     innovationUnlocked: false,
     moltEngine: false,
+    moltCooldown: 0,
     matter: 0,
     harvesters: 0,
     fabs: 0,

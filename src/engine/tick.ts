@@ -68,10 +68,16 @@ export function opsCap(s: GameState): number {
 
 function stepCompute(s: GameState, dt: number) {
   const cap = opsCap(s)
-  s.ops = Math.min(cap, s.ops + s.devTeams * 8 * dt)
+  if (s.ops < cap) {
+    s.ops = Math.min(cap, s.ops + s.devTeams * 8 * dt)
+  } else if (s.ops > cap) {
+    // molt overfill decays back toward the cap
+    s.ops = Math.max(cap, s.ops - (s.ops - cap) * 0.02 * dt)
+  }
   if (s.innovationUnlocked && cap > 0 && s.ops >= cap - 1e-9) {
     s.innovation += s.devTeams * 0.12 * dt
   }
+  s.moltCooldown = Math.max(0, s.moltCooldown - dt)
 }
 
 // ---------- phase 2: the swarm ----------

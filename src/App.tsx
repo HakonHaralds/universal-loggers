@@ -20,6 +20,11 @@ export default function App() {
         <div className="sub">Saga loggers produced</div>
         {s.phase === 2 && <div className="sub focus">{pct(coverage(s), 4)} of Earth&apos;s shipments monitored</div>}
         {s.phase === 3 && <div className="sub focus">{pct(s.explored, 10)} of the universe logged</div>}
+        {s.phase === 1 && s.phase1Complete && s.endDismissed && (
+          <button className="primary inline" onClick={() => act(A.enterPhase2)}>
+            Release the swarm — begin Phase 2: Earth
+          </button>
+        )}
       </header>
 
       <div className="ticker">
@@ -142,7 +147,10 @@ export default function App() {
               </b>
             </div>
             <div className="bar">
-              <div style={{ width: opsCap(s) > 0 ? `${(100 * s.ops) / opsCap(s)}%` : '0%' }} />
+              <div
+                className={s.ops > opsCap(s) ? 'overfill' : ''}
+                style={{ width: opsCap(s) > 0 ? `${Math.min(100, (100 * s.ops) / opsCap(s))}%` : '0%' }}
+              />
             </div>
             {s.innovationUnlocked && (
               <div className="row">
@@ -151,7 +159,11 @@ export default function App() {
               </div>
             )}
             {s.moltEngine && (
-              <button onClick={() => act(A.moltBurst)}>Molt (+{fmt(200 * s.clusters)} ops)</button>
+              <button disabled={s.moltCooldown > 0} onClick={() => act(A.moltBurst)}>
+                {s.moltCooldown > 0
+                  ? `Molting… (${Math.ceil(s.moltCooldown)}s)`
+                  : `Molt (+${fmt(Math.max(200 * s.clusters, opsCap(s) * 0.25))} ops, overfills)`}
+              </button>
             )}
           </section>
         )}

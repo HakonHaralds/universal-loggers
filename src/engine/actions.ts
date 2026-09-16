@@ -64,10 +64,14 @@ export function addCluster(s: GameState) {
   }
 }
 
+export const MOLT_COOLDOWN = 45 // seconds
+
 export function moltBurst(s: GameState) {
-  if (s.moltEngine) {
-    s.ops = Math.min(opsCap(s), s.ops + 200 * s.clusters)
-  }
+  if (!s.moltEngine || s.moltCooldown > 0) return
+  const cap = opsCap(s)
+  const burst = Math.max(200 * s.clusters, cap * 0.25)
+  s.ops = Math.min(cap * 1.5, s.ops + burst) // overfills past the cap; excess decays
+  s.moltCooldown = MOLT_COOLDOWN
 }
 
 // ---------- phase 2 ----------

@@ -181,6 +181,17 @@ button.primary {
   transition: width 0.15s linear;
 }
 
+.bar div.overfill {
+  background: #7a3fb5;
+}
+
+button.inline {
+  display: inline-block;
+  width: auto;
+  margin-top: 0.6rem;
+  padding: 0.45rem 1.2rem;
+}
+
 .note {
   color: var(--muted);
   font-size: 0.8rem;

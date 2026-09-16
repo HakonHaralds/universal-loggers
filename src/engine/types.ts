@@ -46,6 +46,7 @@ export interface GameState {
   innovation: number
   innovationUnlocked: boolean
   moltEngine: boolean
+  moltCooldown: number
   // swarm (phase 2+)
   matter: number
   harvesters: number
