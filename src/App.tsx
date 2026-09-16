@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useGame } from './useGame'
 import * as A from './engine/actions'
 import { demandPerSec, productionPerSec, opsCap, swarmRates, coverage, autonomy, powerState } from './engine/tick'
@@ -37,10 +37,25 @@ export default function App() {
     else root.style.setProperty('--accent', accentFor(fxq))
   }, [fxq])
 
-  const tintOpacity = fxMotion > 0.3 ? ((fxMotion - 0.3) / 0.7) * 0.09 : 0
+  const tintOpacity = fxMotion > 0.2 ? ((fxMotion - 0.2) / 0.8) * 0.18 : 0
+
+  // Point-of-no-return: a quick full-page inversion flash each time the AI
+  // crosses into a new stage of wrongness.
+  const stage = fxColor < 0.15 ? 0 : fxColor < 0.42 ? 1 : fxColor < 0.75 ? 2 : 3
+  const prevStage = useRef(stage)
+  const [flash, setFlash] = useState(false)
+  useEffect(() => {
+    if (stage > prevStage.current && !s.stabilizeUI && !reducedMotion) {
+      setFlash(true)
+      const t = setTimeout(() => setFlash(false), 720)
+      prevStage.current = stage
+      return () => clearTimeout(t)
+    }
+    prevStage.current = stage
+  }, [stage, s.stabilizeUI])
 
   return (
-    <div className="wrap">
+    <div className={`wrap${flash ? ' flash' : ''}`}>
       <div className="coldtint" style={{ opacity: tintOpacity }} aria-hidden />
 
       <header>
@@ -363,15 +378,17 @@ function SwarmPanel({ s, act }: PanelProps) {
           </span>
           <span className="swarm-btns">
             <b className="swarm-owned">{fmt(owned[unit])}</b>
-            {[1, 10, 100].map((n) => (
-              <button
-                key={n}
-                disabled={s.inventory < A.SWARM_COSTS[unit] * n}
-                onClick={() => act((st) => A.buySwarm(st, unit, n))}
-              >
-                +{n}
-              </button>
-            ))}
+            {(s.phase >= 3 ? [10, 100, 1000, 10000] : s.phase >= 2 ? [1, 10, 100, 1000] : [1, 10, 100]).map(
+              (n) => (
+                <button
+                  key={n}
+                  disabled={s.inventory < A.SWARM_COSTS[unit] * n}
+                  onClick={() => act((st) => A.buySwarm(st, unit, n))}
+                >
+                  +{n >= 1000 ? `${n / 1000}k` : n}
+                </button>
+              ),
+            )}
           </span>
         </div>
         <div className="swarm-desc">{m.desc}</div>

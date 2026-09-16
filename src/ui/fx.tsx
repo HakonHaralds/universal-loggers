@@ -1,9 +1,11 @@
 import { useEffect, useState, type MutableRefObject } from 'react'
 
-// Unicode look-alikes for the rare single-character flicker.
+// Unicode look-alikes for the character flicker.
 const CONFUSABLE: Record<string, string> = {
-  a: 'а', c: 'с', e: 'е', o: 'о', p: 'р', i: 'і', y: 'у', x: 'х',
-  A: 'Α', B: 'Β', C: 'С', E: 'Е', H: 'Н', K: 'К', M: 'М', O: 'О', P: 'Р', S: 'Ѕ', T: 'Т',
+  a: 'а', c: 'с', e: 'е', o: 'о', p: 'р', i: 'і', y: 'у', x: 'х', r: 'г', n: 'п',
+  s: 'ѕ', h: 'һ', l: 'ӏ', g: 'ɡ', d: 'ԁ', t: 'т', u: 'υ', w: 'ѡ', m: 'м', b: 'Ь', k: 'к',
+  A: 'Α', B: 'Β', C: 'С', E: 'Е', H: 'Н', K: 'К', M: 'М', N: 'Ν', O: 'О', P: 'Р', R: 'Я',
+  S: 'Ѕ', T: 'Т', U: 'Ս', X: 'Х', Y: 'Υ', G: 'Ԍ', L: 'Ⅼ',
 }
 
 type IntensityRef = MutableRefObject<number>
@@ -28,25 +30,34 @@ export function Glitch({
   className?: string
 }) {
   const [display, setDisplay] = useState(text)
+  const [glitching, setGlitching] = useState(false)
   useEffect(() => {
     setDisplay(text)
     const id = setInterval(() => {
       const a = fxRef.current
-      if (a < 0.35) return
-      const p = Math.min(0.16, (a - 0.35) * 0.24)
+      if (a < 0.15) return
+      const p = Math.min(0.45, (a - 0.15) * 0.55)
       if (Math.random() >= p) return
       const chars = [...text]
       const idxs = chars.map((c, i) => (CONFUSABLE[c] ? i : -1)).filter((i) => i >= 0)
       if (!idxs.length) return
-      const i = idxs[Math.floor(Math.random() * idxs.length)]
-      chars[i] = CONFUSABLE[chars[i]]
+      const n = a > 0.6 ? 2 : 1
+      for (let k = 0; k < n && idxs.length; k++) {
+        const pos = Math.floor(Math.random() * idxs.length)
+        const i = idxs.splice(pos, 1)[0]
+        chars[i] = CONFUSABLE[chars[i]]
+      }
       setDisplay(chars.join(''))
-      setTimeout(() => setDisplay(text), 140)
-    }, 850)
+      setGlitching(true)
+      setTimeout(() => {
+        setDisplay(text)
+        setGlitching(false)
+      }, 220)
+    }, 650)
     return () => clearInterval(id)
     // fxRef is stable; text is the only real dependency
   }, [text, fxRef])
-  return <span className={className}>{display}</span>
+  return <span className={`${className ?? ''}${glitching ? ' glitching' : ''}`}>{display}</span>
 }
 
 // Rarely flashes an alternate, ominous wording for the same label.
@@ -65,12 +76,12 @@ export function Bleed({
   useEffect(() => {
     const id = setInterval(() => {
       const a = fxRef.current
-      if (a < 0.5) return
-      const p = Math.min(0.12, (a - 0.5) * 0.2)
+      if (a < 0.38) return
+      const p = Math.min(0.22, (a - 0.38) * 0.3)
       if (Math.random() >= p) return
       setShow(true)
-      setTimeout(() => setShow(false), 460)
-    }, 1700)
+      setTimeout(() => setShow(false), 520)
+    }, 1300)
     return () => clearInterval(id)
   }, [fxRef])
   return <span className={className}>{show ? alt : normal}</span>

@@ -37,8 +37,42 @@ export function PerryConsole({ s, a }: { s: GameState; a: number }) {
       </div>
       <details className="pc-banner">
         <summary>boot banner</summary>
-        <pre>{PERRY_BANNER}</pre>
+        <GlitchedBanner a={a} />
       </details>
     </div>
   )
+}
+
+const GLYPHS = '▓▒░#@*/\\<>=+×÷¤§'
+
+// Perry's boot banner: green when calm, bleeding toward red with more and more
+// corrupted glyphs as autonomy climbs.
+function GlitchedBanner({ a }: { a: number }) {
+  const [text, setText] = useState(PERRY_BANNER)
+  const ref = useRef(a)
+  ref.current = a
+  useEffect(() => {
+    const id = setInterval(() => {
+      const aa = ref.current
+      if (aa < 0.22) {
+        setText(PERRY_BANNER)
+        return
+      }
+      const chars = [...PERRY_BANNER]
+      const n = Math.floor(aa * aa * 40) // ramps up sharply toward the end
+      for (let k = 0; k < n; k++) {
+        const i = Math.floor(Math.random() * chars.length)
+        if (chars[i] !== '\n' && chars[i] !== ' ') chars[i] = GLYPHS[Math.floor(Math.random() * GLYPHS.length)]
+      }
+      setText(chars.join(''))
+    }, 420)
+    return () => clearInterval(id)
+  }, [])
+  const warmth = Math.max(0, Math.min(1, (a - 0.3) / 0.7))
+  const col = [
+    Math.round(0x6f + (0xd0 - 0x6f) * warmth),
+    Math.round(0xbf + (0x30 - 0xbf) * warmth),
+    Math.round(0x90 + (0x2a - 0x90) * warmth),
+  ]
+  return <pre style={{ color: `rgb(${col[0]}, ${col[1]}, ${col[2]})` }}>{text}</pre>
 }

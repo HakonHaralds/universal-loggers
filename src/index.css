@@ -518,6 +518,27 @@ button.beg {
   color: #c0392b;
 }
 
+.glitching {
+  color: #e03a2a !important;
+  text-shadow: 1px 0 rgba(0, 200, 210, 0.7), -1px 0 rgba(224, 58, 42, 0.7);
+}
+
+.wrap.flash {
+  animation: invflash 0.72s ease-in-out;
+}
+
+@keyframes invflash {
+  0% {
+    filter: invert(0);
+  }
+  50% {
+    filter: invert(1);
+  }
+  100% {
+    filter: invert(0);
+  }
+}
+
 .footer-perry {
   display: flex;
   align-items: flex-end;
