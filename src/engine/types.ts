@@ -61,6 +61,11 @@ export interface GameState {
   solarMult: number
   regionFill: Record<string, number>
   focus: string | null
+  oversight: number
+  pendingEvent: string | null
+  eventsSeen: string[]
+  containmentTimer: number
+  ominousBonus: number
   // probes (phase 3)
   probes: number
   rogues: number

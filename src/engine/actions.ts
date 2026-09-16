@@ -181,6 +181,14 @@ export function setFocus(s: GameState, id: string) {
   s.focus = id
 }
 
+export const COMPLIANCE_COST = 8000
+
+export function complianceReview(s: GameState) {
+  if (s.ops < COMPLIANCE_COST) return
+  s.ops -= COMPLIANCE_COST
+  s.oversight = Math.max(0, s.oversight - 25)
+}
+
 export function enterPhase3(s: GameState) {
   if (s.phase !== 2) return
   s.phase = 3

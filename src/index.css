@@ -458,6 +458,66 @@ button.beg {
   line-height: 1.3;
 }
 
+.eventcard {
+  background: var(--panel);
+  border: 1px solid #c98a2a;
+  border-left-width: 4px;
+  border-radius: 6px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+  animation: pcin 0.25s ease-out;
+}
+
+.eventcard.dire {
+  border-color: #c0392b;
+}
+
+.eventcard h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.95rem;
+}
+
+.eventcard p {
+  margin: 0 0 0.7rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.event-choices {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.event-choices button {
+  margin: 0;
+  padding: 0.5rem 0.6rem;
+}
+
+.event-choices button b {
+  display: block;
+}
+
+.event-choices button span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.bar.oversight > div {
+  background: #4bd07a;
+}
+
+.bar.oversight > div.warm {
+  background: #d9a441;
+}
+
+.bar.oversight > div.hot {
+  background: #c0392b;
+}
+
+.note.warn {
+  color: #c0392b;
+}
+
 .footer-perry {
   display: flex;
   align-items: flex-end;
