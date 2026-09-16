@@ -59,6 +59,8 @@ export interface GameState {
   fabMult: number
   asmMult: number
   solarMult: number
+  regionFill: Record<string, number>
+  focus: string | null
   // probes (phase 3)
   probes: number
   rogues: number

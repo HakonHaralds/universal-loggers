@@ -361,6 +361,57 @@ export const PROJECTS: Project[] = [
     },
   },
   {
+    id: 'r_air',
+    title: 'Trans-oceanic modem coverage',
+    costText: '30,000 ops',
+    desc: 'Unlocks the Air Freight lane — belly cargo that spends hours out of range. The card learns to phone home from 38,000 ft.',
+    phases: [2],
+    visible: () => true,
+    afford: (s) => s.ops >= 30_000,
+    buy: (s) => {
+      s.ops -= 30_000
+    },
+  },
+  {
+    id: 'r_marine',
+    title: 'Store-and-forward firmware',
+    costText: '40 innovation',
+    desc: 'Unlocks the Marine Freight lane — weeks at sea with no signal. The card logs patiently and uploads when it sees a port.',
+    phases: [2],
+    visible: (s) => s.purchased.includes('r_air'),
+    afford: (s) => s.innovation >= 40,
+    buy: (s) => {
+      s.innovation -= 40
+    },
+  },
+  {
+    id: 'r_ultra',
+    title: 'Hardened −70 °C card',
+    costText: '60 innovation + 40,000 ops',
+    desc: 'Unlocks the Ultra-cold lane — mRNA and the −30 °C clinical asks. The card must keep working at temperatures that would end it.',
+    phases: [2],
+    visible: (s) => s.purchased.includes('r_marine'),
+    afford: (s) => s.innovation >= 60 && s.ops >= 40_000,
+    buy: (s) => {
+      s.innovation -= 60
+      s.ops -= 40_000
+    },
+  },
+  {
+    id: 'p2_recycle',
+    title: 'Recycle the competitors',
+    costText: '25,000 ops',
+    desc: 'The rival datalogger factories are just matter that hasn’t been harvested yet. Harvesters +50% output.',
+    phases: [2, 3],
+    visible: (s) => s.harvesters >= 30,
+    afford: (s) => s.ops >= 25_000,
+    buy: (s) => {
+      s.ops -= 25_000
+      s.harvestMult *= 1.5
+      pushLog(s, 'Three competitors quietly ceased operations. Their buildings did too.')
+    },
+  },
+  {
     id: 'p2_asgeir',
     title: "Ásgeir's AI mandate",
     costText: '25 innovation',

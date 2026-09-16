@@ -1,6 +1,7 @@
 import type { GameState } from './types'
-import { pushLog, EARTH_NEED } from './state'
+import { pushLog } from './state'
 import { latchProjects } from './projects'
+import { REGIONS, regionReq, coverageFromRegions, resolveFocus } from './regions'
 
 // ---------- phase 1: the business ----------
 
@@ -135,7 +136,7 @@ export function swarmRates(s: GameState): SwarmRates {
 }
 
 export function coverage(s: GameState): number {
-  return Math.min(1, s.totalLoggers / EARTH_NEED)
+  return coverageFromRegions(s)
 }
 
 function stepSwarm(s: GameState, dt: number) {
@@ -148,6 +149,20 @@ function stepSwarm(s: GameState, dt: number) {
   s.components -= made
   s.inventory += made
   s.totalLoggers += made
+
+  // Deploy production into the focused Earth lane; auto-advance when it fills.
+  const focus = resolveFocus(s)
+  s.focus = focus
+  if (focus && made > 0) {
+    const region = REGIONS.find((x) => x.id === focus)!
+    const before = s.regionFill[focus] ?? 0
+    const req = regionReq(region)
+    const after = Math.min(req, before + made)
+    s.regionFill[focus] = after
+    if (after >= req - 1 && before < req - 1) {
+      pushLog(s, `Lane covered: ${region.name}. Every shipment there now carries a Saga Card.`)
+    }
+  }
 }
 
 // ---------- phase 3: the probes ----------

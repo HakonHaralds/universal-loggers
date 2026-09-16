@@ -177,6 +177,10 @@ export function adjustAlloc(s: GameState, key: keyof ProbeAlloc, delta: number) 
   s.alloc[key] = next
 }
 
+export function setFocus(s: GameState, id: string) {
+  s.focus = id
+}
+
 export function enterPhase3(s: GameState) {
   if (s.phase !== 2) return
   s.phase = 3

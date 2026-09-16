@@ -4,6 +4,7 @@ import * as A from './engine/actions'
 import { demandPerSec, productionPerSec, opsCap, swarmRates, coverage, autonomy } from './engine/tick'
 import { visibleProjects, buyProject } from './engine/projects'
 import { fmt, money, pct, headline } from './format'
+import { REGIONS, regionReq, regionFillOf, regionUnlocked, regionFull } from './engine/regions'
 import { SagaCard, Perry } from './ui/art'
 import { PerryConsole } from './ui/PerryConsole'
 import { Glitch, Bleed, accentFor } from './ui/fx'
@@ -161,6 +162,7 @@ export default function App() {
         )}
 
         {s.phase >= 2 && <SwarmPanel s={s} act={act} />}
+        {s.phase === 2 && <RegionPanel s={s} act={act} />}
         {s.phase === 3 && <ProbePanel s={s} act={act} />}
 
         {showCompute && (
@@ -388,6 +390,46 @@ function SwarmPanel({ s, act }: PanelProps) {
       </div>
       <hr />
       {(['harvester', 'fab', 'solar', 'assembler'] as A.SwarmUnit[]).map(buyUnit)}
+    </section>
+  )
+}
+
+function RegionPanel({ s, act }: PanelProps) {
+  const focus = s.focus
+  return (
+    <section className="panel regions">
+      <h2>Earth Coverage</h2>
+      <div className="note">Production pours into the focused lane. Click a lane to redirect it.</div>
+      {REGIONS.map((r) => {
+        const unlocked = regionUnlocked(s, r)
+        const req = regionReq(r)
+        const fill = regionFillOf(s, r.id)
+        const done = regionFull(s, r)
+        const p = Math.min(100, (100 * fill) / req)
+        const isFocus = unlocked && !done && focus === r.id
+        return (
+          <button
+            key={r.id}
+            className={`region ${isFocus ? 'focused' : ''} ${done ? 'done' : ''}`}
+            disabled={!unlocked || done}
+            onClick={() => act((st) => A.setFocus(st, r.id))}
+          >
+            <div className="region-head">
+              <b>
+                {r.name}
+                {!unlocked && <em> · locked</em>}
+                {done && <em> · covered ✓</em>}
+                {isFocus && <em> · ◀ deploying</em>}
+              </b>
+              <span>{done ? '100%' : `${p.toFixed(1)}%`}</span>
+            </div>
+            <div className="bar">
+              <div style={{ width: `${p}%` }} />
+            </div>
+            <span className="region-flavor">{r.flavor}</span>
+          </button>
+        )
+      })}
     </section>
   )
 }

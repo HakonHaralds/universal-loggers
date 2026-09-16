@@ -48,6 +48,8 @@ export function initialState(): GameState {
     fabMult: 1,
     asmMult: 1,
     solarMult: 1,
+    regionFill: {},
+    focus: null,
     probes: 0,
     rogues: 0,
     explored: 0,
@@ -90,7 +92,12 @@ export function load(): GameState | null {
     const parsed = JSON.parse(raw) as Partial<GameState>
     if (parsed.v !== 1) return null
     const base = initialState()
-    return { ...base, ...parsed, alloc: { ...base.alloc, ...(parsed.alloc ?? {}) } }
+    return {
+      ...base,
+      ...parsed,
+      alloc: { ...base.alloc, ...(parsed.alloc ?? {}) },
+      regionFill: parsed.regionFill ?? {},
+    }
   } catch {
     return null
   }
