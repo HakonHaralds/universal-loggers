@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useGame } from './useGame'
 import * as A from './engine/actions'
-import { demandPerSec, productionPerSec, opsCap, swarmRates, coverage, autonomy } from './engine/tick'
+import { demandPerSec, productionPerSec, opsCap, swarmRates, coverage, autonomy, powerState } from './engine/tick'
 import { visibleProjects, buyProject } from './engine/projects'
 import { fmt, money, pct, headline } from './format'
 import { REGIONS, regionReq, regionFillOf, regionUnlocked, regionFull } from './engine/regions'
@@ -327,10 +327,13 @@ interface PanelProps {
 
 function SwarmPanel({ s, act }: PanelProps) {
   const r = swarmRates(s)
+  const p = powerState(s)
+  const isDay = p.day > 0.55
   const owned: Record<A.SwarmUnit, number> = {
     harvester: s.harvesters,
     fab: s.fabs,
     solar: s.solar,
+    battery: s.batteries,
     assembler: s.assemblers,
   }
   const buyUnit = (unit: A.SwarmUnit) => {
@@ -386,13 +389,26 @@ function SwarmPanel({ s, act }: PanelProps) {
         <b>{fmt(r.loggersPerSec)}/s</b>
       </div>
       <div className="row">
-        <span>Power</span>
-        <b className={r.eff < 1 ? 'warn' : ''}>
-          {fmt(r.supplyMW)} / {fmt(r.demandMW)} MW {r.eff < 1 && `(throttled ${Math.round(r.eff * 100)}%)`}
+        <span>Power {isDay ? '☀ day' : '🌙 night'}</span>
+        <b className={p.eff < 1 ? 'warn' : ''}>
+          {fmt(p.solarNow)} / {fmt(p.demandMW)} MW{p.eff < 1 ? ` (${Math.round(p.eff * 100)}%)` : ''}
         </b>
       </div>
+      {s.batteries > 0 && (
+        <>
+          <div className="row">
+            <span>Battery</span>
+            <b>
+              {fmt(p.charge)} / {fmt(p.capacity)} {p.chargeDelta < 0 ? '▼' : '▲'}
+            </b>
+          </div>
+          <div className="bar">
+            <div style={{ width: p.capacity > 0 ? `${(100 * p.charge) / p.capacity}%` : '0%' }} />
+          </div>
+        </>
+      )}
       <hr />
-      {(['harvester', 'fab', 'solar', 'assembler'] as A.SwarmUnit[]).map(buyUnit)}
+      {(['harvester', 'fab', 'solar', 'battery', 'assembler'] as A.SwarmUnit[]).map(buyUnit)}
     </section>
   )
 }

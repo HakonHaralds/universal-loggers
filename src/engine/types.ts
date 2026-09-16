@@ -66,6 +66,9 @@ export interface GameState {
   eventsSeen: string[]
   containmentTimer: number
   ominousBonus: number
+  clock: number
+  batteries: number
+  charge: number
   // probes (phase 3)
   probes: number
   rogues: number

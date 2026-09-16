@@ -114,6 +114,44 @@ function stepCompute(s: GameState, dt: number) {
 
 // ---------- phase 2: the swarm ----------
 
+export const BATTERY_CAP = 3000 // MW·s stored per battery bank
+export const BATTERY_RATE = 400 // MW charge/discharge per bank
+const DAY_PERIOD = 120 // seconds per day/night cycle
+
+// Solar output rides a day/night cycle: full at noon, ~15% at midnight.
+export function daylight(s: GameState): number {
+  return 0.15 + 0.85 * (Math.sin((2 * Math.PI * s.clock) / DAY_PERIOD) * 0.5 + 0.5)
+}
+
+export interface PowerState {
+  demandMW: number
+  solarNow: number
+  capacity: number
+  charge: number
+  eff: number
+  chargeDelta: number // +charging / −discharging, MW
+  day: number
+}
+
+export function powerState(s: GameState): PowerState {
+  const demandMW = s.harvesters + s.fabs + s.assemblers * 10
+  const solarNow = s.solar * 5 * s.solarMult * daylight(s)
+  const capacity = s.batteries * BATTERY_CAP
+  const rate = s.batteries * BATTERY_RATE
+  let eff: number
+  let chargeDelta: number
+  if (solarNow >= demandMW) {
+    eff = 1
+    chargeDelta = Math.min(solarNow - demandMW, rate) // bank the surplus
+  } else {
+    const deficit = demandMW - solarNow
+    const fromBatt = s.charge > 0 ? Math.min(deficit, rate) : 0
+    eff = demandMW > 0 ? Math.min(1, (solarNow + fromBatt) / demandMW) : 1
+    chargeDelta = -fromBatt
+  }
+  return { demandMW, solarNow, capacity, charge: s.charge, eff, chargeDelta, day: daylight(s) }
+}
+
 export interface SwarmRates {
   supplyMW: number
   demandMW: number
@@ -124,16 +162,14 @@ export interface SwarmRates {
 }
 
 export function swarmRates(s: GameState): SwarmRates {
-  const demandMW = s.harvesters + s.fabs + s.assemblers * 10
-  const supplyMW = s.solar * 5 * s.solarMult
-  const eff = demandMW > 0 ? Math.min(1, supplyMW / demandMW) : 1
+  const p = powerState(s)
   return {
-    supplyMW,
-    demandMW,
-    eff,
-    harvestPerSec: s.harvesters * 1000 * s.harvestMult * eff,
-    setsPerSec: s.fabs * 100 * s.fabMult * eff,
-    loggersPerSec: s.assemblers * 2000 * s.asmMult * eff,
+    supplyMW: p.solarNow,
+    demandMW: p.demandMW,
+    eff: p.eff,
+    harvestPerSec: s.harvesters * 1000 * s.harvestMult * p.eff,
+    setsPerSec: s.fabs * 100 * s.fabMult * p.eff,
+    loggersPerSec: s.assemblers * 2000 * s.asmMult * p.eff,
   }
 }
 
@@ -152,6 +188,11 @@ function stepOversight(s: GameState, dt: number) {
 }
 
 function stepSwarm(s: GameState, dt: number) {
+  // Evolve battery charge from the current power balance.
+  const p = powerState(s)
+  if (p.chargeDelta > 0) s.charge = Math.min(p.capacity, s.charge + p.chargeDelta * dt)
+  else s.charge = Math.max(0, s.charge + p.chargeDelta * dt)
+
   const r = swarmRates(s)
   const pen = s.containmentTimer > 0 ? 0.5 : 1 // production halved during containment
   s.matter += r.harvestPerSec * pen * dt
@@ -261,6 +302,7 @@ export function step(s: GameState, dt: number) {
   stepCompute(s, dt)
   if (s.phase === 1) stepMarket(s, dt)
   if (s.phase >= 2) {
+    s.clock += dt
     stepOversight(s, dt)
     stepSwarm(s, dt)
   }

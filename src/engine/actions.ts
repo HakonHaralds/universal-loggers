@@ -103,6 +103,7 @@ export const SWARM_COSTS = {
   harvester: 2_000,
   fab: 5_000,
   solar: 10_000,
+  battery: 15_000,
   assembler: 100_000,
 } as const
 
@@ -123,8 +124,13 @@ export const SWARM_META: Record<SwarmUnit, { label: string; makes: string; desc:
   },
   solar: {
     label: 'Solar farm',
-    makes: '→ power',
-    desc: 'Powers everything above. The sun was radiating into empty space anyway. Wasteful, really.',
+    makes: '→ power (daytime)',
+    desc: 'Powers everything above — while the sun is up. At night it produces roughly nothing, which the swarm finds inconvenient.',
+  },
+  battery: {
+    label: 'Battery bank',
+    makes: 'stores power',
+    desc: 'Banks daytime surplus to run the swarm through the night. Without these, production browns out after dark.',
   },
   assembler: {
     label: 'Assembler plant',
@@ -140,6 +146,7 @@ export function buySwarm(s: GameState, unit: SwarmUnit, count: number) {
   if (unit === 'harvester') s.harvesters += count
   if (unit === 'fab') s.fabs += count
   if (unit === 'solar') s.solar += count
+  if (unit === 'battery') s.batteries += count
   if (unit === 'assembler') s.assemblers += count
 }
 
