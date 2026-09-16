@@ -339,6 +339,77 @@ button.ghost {
   transition: color 2s linear;
 }
 
+button.beg {
+  background: #7a3b12;
+  border-color: #a8621f;
+  color: #ffe6c8;
+  font-weight: 600;
+  text-align: center;
+  animation: begpulse 1.6s ease-in-out infinite;
+}
+
+@keyframes begpulse {
+  50% {
+    border-color: #e0913f;
+  }
+}
+
+.swarm-unit {
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.swarm-unit:first-of-type {
+  border-top: none;
+}
+
+.swarm-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.swarm-head > span:first-child em {
+  color: var(--accent);
+  font-style: normal;
+  font-size: 0.82em;
+  margin-left: 0.3rem;
+}
+
+.swarm-btns {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.swarm-owned {
+  margin-right: 0.3rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.swarm-btns button {
+  display: inline-block;
+  width: auto;
+  margin: 0;
+  padding: 0.1rem 0.5rem;
+}
+
+.swarm-desc {
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin-top: 0.2rem;
+  line-height: 1.35;
+}
+
+.swarm-cost {
+  color: var(--muted);
+  font-size: 0.72rem;
+  opacity: 0.7;
+  margin-top: 0.15rem;
+}
+
 .footer-perry {
   display: flex;
   align-items: flex-end;

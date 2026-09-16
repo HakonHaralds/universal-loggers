@@ -59,6 +59,18 @@ export const PROJECTS: Project[] = [
     },
   },
   {
+    id: 'finance',
+    title: 'Revenue telemetry',
+    costText: '400 ops',
+    desc: 'Adds a live money/s readout to the Business panel. Finally, a number Finance and the AI can both agree on.',
+    phases: [1],
+    visible: (s) => s.ops >= 150,
+    afford: (s) => s.ops >= 400,
+    buy: (s) => {
+      s.ops -= 400
+    },
+  },
+  {
     id: 'wtp',
     title: 'Willingness-to-pay study',
     costText: '$3,000',

@@ -50,6 +50,10 @@ function stepMarket(s: GameState, dt: number) {
     s.funds += sold * (s.price + s.pricePremium)
   }
 
+  // Smoothed revenue rate for the money/s readout (~2s EMA).
+  const incomePerSec = dt > 0 ? (sold * (s.price + s.pricePremium)) / dt : 0
+  s.revEma += (incomePerSec - s.revEma) * Math.min(1, dt / 2)
+
   // Board trust at fibonacci production milestones (2k, 3k, 5k, 8k, ...)
   while (s.totalLoggers >= s.fibB * 1000) {
     const next = s.fibA + s.fibB

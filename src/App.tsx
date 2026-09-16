@@ -78,6 +78,11 @@ export default function App() {
               <button className="primary" disabled={s.components < 1} onClick={() => act(A.makeLogger)}>
                 Assemble Saga Card
               </button>
+              {A.isSoftlocked(s) && (
+                <button className="beg" onClick={() => act(A.begInvestors)}>
+                  🥺 Beg investors — out of cards, cash, and components
+                </button>
+              )}
               <div className="row">
                 <span>Component sets</span>
                 <b>{fmt(s.components)}</b>
@@ -140,6 +145,12 @@ export default function App() {
                 </span>
                 <b>{demandPerSec(s).toFixed(2)}/s</b>
               </div>
+              {s.purchased.includes('finance') && (
+                <div className="row">
+                  <span>Revenue</span>
+                  <b>{money(s.revEma)}/s</b>
+                </div>
+              )}
               <hr />
               <button disabled={s.funds < A.marketingCost(s)} onClick={() => act(A.buyMarketing)}>
                 Marketing (lvl {s.marketing}) — {money(A.marketingCost(s))}
@@ -307,24 +318,38 @@ interface PanelProps {
 
 function SwarmPanel({ s, act }: PanelProps) {
   const r = swarmRates(s)
-  const buyRow = (label: string, unit: A.SwarmUnit, owned: number) => (
-    <div className="row buyrow">
-      <span>
-        {label} <em>({fmt(owned)})</em>
-      </span>
-      <span>
-        {[1, 10, 100].map((n) => (
-          <button
-            key={n}
-            disabled={s.inventory < A.SWARM_COSTS[unit] * n}
-            onClick={() => act((st) => A.buySwarm(st, unit, n))}
-          >
-            +{n}
-          </button>
-        ))}
-      </span>
-    </div>
-  )
+  const owned: Record<A.SwarmUnit, number> = {
+    harvester: s.harvesters,
+    fab: s.fabs,
+    solar: s.solar,
+    assembler: s.assemblers,
+  }
+  const buyUnit = (unit: A.SwarmUnit) => {
+    const m = A.SWARM_META[unit]
+    return (
+      <div className="swarm-unit" key={unit}>
+        <div className="swarm-head">
+          <span>
+            {m.label} <em>{m.makes}</em>
+          </span>
+          <span className="swarm-btns">
+            <b className="swarm-owned">{fmt(owned[unit])}</b>
+            {[1, 10, 100].map((n) => (
+              <button
+                key={n}
+                disabled={s.inventory < A.SWARM_COSTS[unit] * n}
+                onClick={() => act((st) => A.buySwarm(st, unit, n))}
+              >
+                +{n}
+              </button>
+            ))}
+          </span>
+        </div>
+        <div className="swarm-desc">{m.desc}</div>
+        <div className="swarm-cost">{fmt(A.SWARM_COSTS[unit])} cards each</div>
+      </div>
+    )
+  }
   return (
     <section className="panel">
       <h2>The Swarm</h2>
@@ -354,10 +379,7 @@ function SwarmPanel({ s, act }: PanelProps) {
         </b>
       </div>
       <hr />
-      {buyRow(`Harvester drone — ${fmt(A.SWARM_COSTS.harvester)}`, 'harvester', s.harvesters)}
-      {buyRow(`Component fab — ${fmt(A.SWARM_COSTS.fab)}`, 'fab', s.fabs)}
-      {buyRow(`Solar farm — ${fmt(A.SWARM_COSTS.solar)}`, 'solar', s.solar)}
-      {buyRow(`Assembler plant — ${fmt(A.SWARM_COSTS.assembler)}`, 'assembler', s.assemblers)}
+      {(['harvester', 'fab', 'solar', 'assembler'] as A.SwarmUnit[]).map(buyUnit)}
     </section>
   )
 }

@@ -25,6 +25,8 @@ export interface GameState {
   marketing: number
   demandMult: number
   salesAcc: number
+  revEma: number
+  begCount: number
   // component reels (phase 1)
   reelPrice: number
   reelBase: number

@@ -18,6 +18,8 @@ export function initialState(): GameState {
     marketing: 0,
     demandMult: 1,
     salesAcc: 0,
+    revEma: 0,
+    begCount: 0,
     reelPrice: 600,
     reelBase: 600,
     setsPerReel: 100,
