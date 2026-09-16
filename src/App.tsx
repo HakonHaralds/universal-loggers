@@ -373,6 +373,10 @@ function SwarmPanel({ s, act }: PanelProps) {
         <b>{fmt(s.matter)}</b>
       </div>
       <div className="row">
+        <span>Component sets</span>
+        <b>{fmt(s.components)}</b>
+      </div>
+      <div className="row">
         <span>Production</span>
         <b>{fmt(r.loggersPerSec)}/s</b>
       </div>
