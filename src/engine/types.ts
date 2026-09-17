@@ -100,4 +100,8 @@ export interface GameState {
   milestonesShown: string[]
   log: LogEntry[]
   logSeq: number
+  playSeconds: number
+  peakProd: number
+  toasts: LogEntry[]
+  toastSeq: number
 }

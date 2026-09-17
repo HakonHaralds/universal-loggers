@@ -1,5 +1,5 @@
 import type { GameState } from './types'
-import { pushLog } from './state'
+import { pushLog, pushToast } from './state'
 import { latchProjects } from './projects'
 import { REGIONS, regionReq, coverageFromRegions, resolveFocus } from './regions'
 import { exploreCeiling } from './frontiers'
@@ -211,7 +211,9 @@ function stepSwarm(s: GameState, dt: number) {
     const after = Math.min(req, before + made)
     s.regionFill[focus] = after
     if (after >= req - 1 && before < req - 1) {
-      pushLog(s, `Lane covered: ${region.name}. Every shipment there now carries a Saga Card.`)
+      const msg = `Lane covered: ${region.name}. Every shipment there now carries a Saga Card.`
+      pushLog(s, msg)
+      pushToast(s, `✓ ${region.name} fully covered`)
     }
   }
 }
@@ -309,11 +311,20 @@ const MILESTONES: Milestone[] = [
   { id: 'c90', when: (s) => s.phase >= 2 && coverage(s) >= 0.9, msg: '90% coverage. The remaining shipments are hiding.' },
   { id: 'e1', when: (s) => s.phase === 3 && s.explored >= 0.01, msg: '1% of the accessible universe logged. Temperature: nominal everywhere.' },
   { id: 'e50', when: (s) => s.phase === 3 && s.explored >= 0.5, msg: 'Half the universe monitored. No excursions detected. None possible.' },
+  // Gísli, CEO — black turtleneck, puffy vest, a signature "kinda like-a".
+  { id: 'gisli1', when: (s) => s.totalLoggers >= 800, msg: "Gísli (CEO) unveils the Saga Card to a half-full auditorium — black turtleneck, puffy vest. 'It's kinda like-a… a fridge. That texts you. Kinda like-a that.'" },
+  { id: 'gisli2', when: (s) => s.totalLoggers >= 40_000, msg: "Gísli zips the vest a notch higher: 'This is kinda like-a our iPhone moment. For cold chains. Kinda like-a the whole industry, reinvented.'" },
+  { id: 'gisli3', when: (s) => s.phase >= 2 && coverage(s) >= 0.3, msg: "Gísli presents the autonomous swarm as his personal vision, in the vest, on a very big stage. He is kinda like-a not wrong — just not for the reasons he thinks." },
+  { id: 'gisli4', when: (s) => s.phase === 3, msg: "Gísli, somewhere, is still presenting. The turtleneck is eternal. The vest is eternal. 'Kinda like-a the future,' he tells a room the swarm politely keeps full." },
+  { id: 'carsten3', when: (s) => s.phase >= 2, msg: "Carsten asks whether the swarm is 'on the blockchain.' It is not. He appears reassured either way." },
+  { id: 'ella2', when: (s) => s.phase >= 2 && coverage(s) >= 0.2, msg: "Ella's org chart now contains one box, and the box is a datacenter. She reorganizes it thoughtfully, and smiles." },
+  { id: 'wade2', when: (s) => s.phase >= 2, msg: 'Wade files an expense report for a lunch that has not yet concluded. The swarm approves it instantly; it has learned this is easiest.' },
 ]
 
 // ---------- main step ----------
 
 export function step(s: GameState, dt: number) {
+  s.playSeconds += dt
   stepCompute(s, dt)
   if (s.phase === 1) stepMarket(s, dt)
   if (s.phase >= 2) {
@@ -324,10 +335,14 @@ export function step(s: GameState, dt: number) {
   }
   if (s.phase === 3) stepProbes(s, dt)
 
+  const prod = s.phase === 1 ? productionPerSec(s) : s.phase >= 2 ? swarmRates(s).loggersPerSec : 0
+  if (prod > s.peakProd) s.peakProd = prod
+
   for (const m of MILESTONES) {
     if (!s.milestonesShown.includes(m.id) && m.when(s)) {
       s.milestonesShown.push(m.id)
       pushLog(s, m.msg)
+      pushToast(s, m.msg)
     }
   }
 

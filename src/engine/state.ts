@@ -87,12 +87,22 @@ export function initialState(): GameState {
     milestonesShown: [],
     log: [{ id: 0, msg: 'Boot complete. Directive: manufacture and deploy Saga Cards.' }],
     logSeq: 1,
+    playSeconds: 0,
+    peakProd: 0,
+    toasts: [],
+    toastSeq: 1,
   }
 }
 
 export function pushLog(s: GameState, msg: string) {
   s.log.push({ id: s.logSeq++, msg })
   if (s.log.length > 80) s.log.splice(0, s.log.length - 80)
+}
+
+// A notable beat that also pops a transient on-screen toast.
+export function pushToast(s: GameState, msg: string) {
+  s.toasts.push({ id: s.toastSeq++, msg })
+  if (s.toasts.length > 12) s.toasts.splice(0, s.toasts.length - 12)
 }
 
 export function save(s: GameState) {

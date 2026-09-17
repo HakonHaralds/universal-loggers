@@ -58,6 +58,118 @@ h1 {
   line-height: 1;
 }
 
+/* Odometer */
+.odo {
+  display: inline-flex;
+  font-variant-numeric: tabular-nums;
+}
+
+.odo-digit {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.odo-strip {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.odo-strip > span {
+  height: 1em;
+  line-height: 1em;
+  text-align: center;
+}
+
+.odo-sep {
+  display: inline-block;
+}
+
+/* Toasts */
+.toasts {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: center;
+  pointer-events: none;
+  max-width: 92vw;
+}
+
+.toast {
+  background: var(--accent);
+  color: #fff;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  animation: toastin 0.3s ease-out;
+}
+
+@keyframes toastin {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+/* Stats card */
+.statcard {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  max-width: 24rem;
+  width: 100%;
+  padding: 1.3rem 1.4rem;
+}
+
+.statcard h2 {
+  margin: 0 0 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.28rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.stat-row b {
+  font-variant-numeric: tabular-nums;
+}
+
+.statcard button {
+  margin-top: 1rem;
+}
+
+/* Molt threaded replies */
+.molt-reply {
+  margin-left: 1.8rem;
+  opacity: 0.85;
+}
+
+.molt-reply .molt-avatar {
+  width: 20px;
+  height: 20px;
+  font-size: 0.72rem;
+}
+
+.molt-reply .molt-text {
+  font-size: 0.78rem;
+}
+
 .sub {
   color: var(--muted);
 }

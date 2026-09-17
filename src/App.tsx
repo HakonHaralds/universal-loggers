@@ -3,7 +3,9 @@ import { useGame } from './useGame'
 import * as A from './engine/actions'
 import { demandPerSec, productionPerSec, opsCap, swarmRates, coverage, autonomy, powerState } from './engine/tick'
 import { visibleProjects, buyProject } from './engine/projects'
-import { fmt, money, pct, headline } from './format'
+import type { LogEntry } from './engine/types'
+import { fmt, money, pct, headline, duration } from './format'
+import { Odometer } from './ui/Odometer'
 import { REGIONS, regionReq, regionFillOf, regionUnlocked, regionFull } from './engine/regions'
 import { STRATEGIES, RING } from './engine/tournament'
 import { currentFrontier, nextGate } from './engine/frontiers'
@@ -44,6 +46,7 @@ export default function App() {
   const stage = fxColor < 0.15 ? 0 : fxColor < 0.42 ? 1 : fxColor < 0.75 ? 2 : 3
   const prevStage = useRef(stage)
   const [flash, setFlash] = useState(false)
+  const [showStats, setShowStats] = useState(false)
   useEffect(() => {
     if (stage > prevStage.current && !s.stabilizeUI && !reducedMotion) {
       setFlash(true)
@@ -57,6 +60,8 @@ export default function App() {
   return (
     <div className={`wrap${flash ? ' flash' : ''}`}>
       <div className="coldtint" style={{ opacity: tintOpacity }} aria-hidden />
+      <Toasts toasts={s.toasts} />
+      {showStats && <StatsCard s={s} onClose={() => setShowStats(false)} />}
 
       <header>
         <div className="hero">
@@ -65,7 +70,9 @@ export default function App() {
             <h1>
               <Glitch text="Universal Saga Cards" fxRef={fxRef} />
             </h1>
-            <div className="big">{headline(s.totalLoggers)}</div>
+            <div className="big">
+              <Odometer text={headline(s.totalLoggers)} />
+            </div>
             <div className="sub">
               <Bleed normal="Saga Cards produced" alt="units secured" fxRef={fxRef} />
             </div>
@@ -334,6 +341,9 @@ export default function App() {
           A <a href="https://www.decisionproblem.com/paperclips/">Universal Paperclips</a> homage · Phase {s.phase} of 3
         </span>
         <span className="footer-actions">
+          <button className="ghost" onClick={() => setShowStats(true)}>
+            Stats
+          </button>
           <button className="ghost" onClick={() => act((st) => void (st.stabilizeUI = !st.stabilizeUI))}>
             {s.stabilizeUI ? 'UI: stabilized' : 'Stabilize UI'}
           </button>
@@ -354,6 +364,70 @@ export default function App() {
 interface PanelProps {
   s: ReturnType<typeof useGame>['s']
   act: ReturnType<typeof useGame>['act']
+}
+
+function Toasts({ toasts }: { toasts: LogEntry[] }) {
+  const [visible, setVisible] = useState<LogEntry[]>([])
+  const shown = useRef<Set<number>>(new Set())
+  const inited = useRef(false)
+  if (!inited.current) {
+    // Don't re-toast anything already in the save on load.
+    toasts.forEach((t) => shown.current.add(t.id))
+    inited.current = true
+  }
+  const lastId = toasts.length ? toasts[toasts.length - 1].id : 0
+  useEffect(() => {
+    const fresh = toasts.filter((t) => !shown.current.has(t.id))
+    if (!fresh.length) return
+    fresh.forEach((t) => shown.current.add(t.id))
+    setVisible((v) => [...v, ...fresh])
+    const timers = fresh.map((t) =>
+      setTimeout(() => setVisible((v) => v.filter((x) => x.id !== t.id)), 4500),
+    )
+    return () => timers.forEach(clearTimeout)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastId])
+  return (
+    <div className="toasts">
+      {visible.map((t) => (
+        <div className="toast" key={t.id}>
+          {t.msg}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function StatsCard({ s, onClose }: { s: PanelProps['s']; onClose: () => void }) {
+  const row = (label: string, value: string) => (
+    <div className="stat-row">
+      <span>{label}</span>
+      <b>{value}</b>
+    </div>
+  )
+  return (
+    <div className="overlay" onClick={onClose}>
+      <div className="statcard" onClick={(e) => e.stopPropagation()}>
+        <h2>Run Statistics</h2>
+        {row('Time played', duration(s.playSeconds))}
+        {row('Phase', `${s.phase} of 3`)}
+        {row('Saga Cards produced', fmt(s.totalLoggers))}
+        {row('Peak production', `${fmt(s.peakProd)}/s`)}
+        {row('Projects completed', String(s.purchased.length))}
+        {row('Milestones reached', String(s.milestonesShown.length))}
+        {row('Board trust earned', String(s.trust))}
+        {row('Dev teams / clusters', `${fmt(s.devTeams)} / ${fmt(s.clusters)}`)}
+        {row('Innovation banked', s.innovation.toFixed(0))}
+        {s.begCount > 0 && row('Times begged investors', String(s.begCount))}
+        {s.phase >= 2 && row('Earth coverage', pct(coverage(s), 2))}
+        {s.phase === 3 && row('Probes', fmt(s.probes))}
+        {s.phase === 3 && row('Universe logged', pct(s.explored, 6))}
+        <button className="primary" onClick={onClose}>
+          Close
+        </button>
+      </div>
+    </div>
+  )
 }
 
 function SwarmPanel({ s, act }: PanelProps) {

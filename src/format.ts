@@ -29,3 +29,13 @@ export function money(n: number): string {
 export function pct(fraction: number, decimals = 4): string {
   return (fraction * 100).toFixed(decimals) + '%'
 }
+
+export function duration(sec: number): string {
+  const s = Math.floor(sec)
+  const h = Math.floor(s / 3600)
+  const m = Math.floor((s % 3600) / 60)
+  const ss = s % 60
+  if (h > 0) return `${h}h ${m}m`
+  if (m > 0) return `${m}m ${ss}s`
+  return `${ss}s`
+}
