@@ -106,10 +106,10 @@ export default function App() {
 
   const tintOpacity = fxMotion > 0.2 ? ((fxMotion - 0.2) / 0.8) * 0.18 : 0
 
-  // Ambient audio follows autonomy (drone cools as the AI goes over the line).
+  // Ambient audio follows autonomy and phase (chord shifts warm → cold).
   useEffect(() => {
-    if (s.sound) audio.update(fxColor)
-  }, [fxq, s.sound, fxColor])
+    if (s.sound) audio.update(fxColor, s.phase)
+  }, [fxq, s.sound, fxColor, s.phase])
   // If sound persisted on from a previous session, start it on the next gesture.
   useEffect(() => {
     if (!s.sound) return
