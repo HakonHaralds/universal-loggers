@@ -600,8 +600,12 @@ function SwarmPanel({ s, act }: PanelProps) {
           </span>
           <span className="swarm-btns">
             <b className="swarm-owned">{fmt(owned[unit])}</b>
-            {(s.phase >= 3 ? [10, 100, 1000, 10000] : s.phase >= 2 ? [1, 10, 100, 1000] : [1, 10, 100]).map(
-              (n) => (
+            {(s.phase >= 3
+              ? [10, 100, 1000, 10000]
+              : s.phase >= 2
+                ? [10, 100, 1000, 10000]
+                : [1, 10, 100]
+            ).map((n) => (
                 <button
                   key={n}
                   disabled={s.inventory < A.SWARM_COSTS[unit] * n}
