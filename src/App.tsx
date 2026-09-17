@@ -4,6 +4,7 @@ import * as A from './engine/actions'
 import { demandPerSec, productionPerSec, opsCap, swarmRates, coverage, autonomy, powerState } from './engine/tick'
 import { visibleProjects, buyProject } from './engine/projects'
 import type { LogEntry } from './engine/types'
+import { pushToast } from './engine/state'
 import { fmt, money, pct, headline, duration } from './format'
 import { Odometer } from './ui/Odometer'
 import { NewsTicker } from './ui/NewsTicker'
@@ -36,9 +37,51 @@ export default function App() {
   const fxq = Math.round(fxColor * 40) / 40
   useEffect(() => {
     const root = document.documentElement
-    if (fxq <= 0.001) root.style.removeProperty('--accent')
+    // A CRT skin defines its own accent; don't let the drift override it.
+    if (s.skin !== 'default' || fxq <= 0.001) root.style.removeProperty('--accent')
     else root.style.setProperty('--accent', accentFor(fxq))
-  }, [fxq])
+  }, [fxq, s.skin])
+
+  useEffect(() => {
+    const root = document.documentElement
+    if (s.skin && s.skin !== 'default') root.dataset.skin = s.skin
+    else delete root.dataset.skin
+  }, [s.skin])
+
+  // Konami code → unlock the CRT skins for free, with a wink.
+  useEffect(() => {
+    const seq = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a']
+    let pos = 0
+    const onKey = (e: KeyboardEvent) => {
+      const k = e.key.toLowerCase()
+      if (k === seq[pos]) {
+        pos++
+        if (pos === seq.length) {
+          pos = 0
+          act((st) => {
+            if (!st.purchased.includes('crt_skins')) st.purchased.push('crt_skins')
+            pushToast(st, '↑↑↓↓←→←→BA — display skins unlocked. Perry is delighted.')
+          })
+        }
+      } else {
+        pos = k === seq[0] ? 1 : 0
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  const SKINS = ['default', 'amber', 'green', 'blueprint']
+  const perryClicks = useRef(0)
+  const [perryWiggle, setPerryWiggle] = useState(0)
+  const onPerryClick = () =>
+    act((st) => {
+      perryClicks.current++
+      setPerryWiggle((w) => w + 1)
+      if (perryClicks.current === 10) pushToast(st, '🥚 Perry appreciates the attention.')
+      if (perryClicks.current === 25)
+        pushToast(st, fxColor > 0.6 ? 'Perry does not feel the clicks anymore.' : 'Perry is ticklish, apparently.')
+    })
 
   const tintOpacity = fxMotion > 0.2 ? ((fxMotion - 0.2) / 0.8) * 0.18 : 0
 
@@ -61,6 +104,7 @@ export default function App() {
   return (
     <div className={`wrap${flash ? ' flash' : ''}`}>
       <div className="coldtint" style={{ opacity: tintOpacity }} aria-hidden />
+      {s.skin !== 'default' && <div className="scanlines" aria-hidden />}
       <Toasts toasts={s.toasts} />
       {showStats && <StatsCard s={s} onClose={() => setShowStats(false)} />}
 
@@ -337,13 +381,27 @@ export default function App() {
       )}
 
       <footer>
-        <div className="footer-perry">
-          <Perry size={64} a={fxColor} motion={fxMotion > 0} />
+        <div className="footer-perry" onClick={onPerryClick} title="Perry">
+          <span className="perry-wiggle" key={perryWiggle}>
+            <Perry size={64} a={fxColor} motion={fxMotion > 0} />
+          </span>
         </div>
         <span>
           A <a href="https://www.decisionproblem.com/paperclips/">Universal Paperclips</a> homage · Phase {s.phase} of 3
         </span>
         <span className="footer-actions">
+          {s.purchased.includes('crt_skins') && (
+            <button
+              className="ghost"
+              onClick={() =>
+                act((st) => {
+                  st.skin = SKINS[(SKINS.indexOf(st.skin) + 1) % SKINS.length]
+                })
+              }
+            >
+              Skin: {s.skin}
+            </button>
+          )}
           <button className="ghost" onClick={() => setShowStats(true)}>
             Stats
           </button>

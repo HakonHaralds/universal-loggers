@@ -82,6 +82,7 @@ export function initialState(): GameState {
     endDismissed: false,
     finaleDismissed: false,
     stabilizeUI: false,
+    skin: 'default',
     purchased: [],
     seen: [],
     milestonesShown: [],

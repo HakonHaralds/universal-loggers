@@ -71,6 +71,18 @@ export const PROJECTS: Project[] = [
     },
   },
   {
+    id: 'crt_skins',
+    title: 'CRT display driver',
+    costText: '1,200 ops',
+    desc: 'Reformat the dashboard for legacy phosphor displays. Unlocks selectable CRT skins (amber, green, blueprint) in the footer.',
+    phases: [1, 2, 3],
+    visible: (s) => s.purchased.includes('perry'),
+    afford: (s) => s.ops >= 1200,
+    buy: (s) => {
+      s.ops -= 1200
+    },
+  },
+  {
     id: 'wtp',
     title: 'Willingness-to-pay study',
     costText: '$3,000',

@@ -26,9 +26,17 @@ function stepMarket(s: GameState, dt: number) {
   const revert = (s.reelBase - s.reelPrice) * 0.15 * dt
   s.reelPrice = Math.min(Math.max(s.reelPrice + noise + revert, s.reelBase * 0.55), s.reelBase * 1.7)
 
-  if (s.autoReelBuyer && s.components < 20 && s.funds >= s.reelPrice) {
-    s.funds -= s.reelPrice
-    s.components += s.setsPerReel
+  // Keep ~2s of production buffered, or a reel's worth — enough that the lines
+  // never starve. One-reel-per-tick throttled average output below throughput,
+  // which stalled inventory growth once production neared demand.
+  if (s.autoReelBuyer) {
+    const target = Math.max(s.setsPerReel, productionPerSec(s) * 2)
+    let guard = 0
+    while (s.components < target && s.funds >= s.reelPrice && guard < 100000) {
+      s.funds -= s.reelPrice
+      s.components += s.setsPerReel
+      guard++
+    }
   }
 
   // Automated production, limited by component stock

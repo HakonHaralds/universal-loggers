@@ -170,6 +170,65 @@ h1 {
   font-size: 0.78rem;
 }
 
+/* Easter egg: clicking Perry */
+.footer-perry {
+  cursor: pointer;
+}
+
+.perry-wiggle {
+  display: inline-block;
+  animation: perrywiggle 0.4s ease-in-out;
+}
+
+@keyframes perrywiggle {
+  25% {
+    transform: rotate(-9deg) translateY(-2px);
+  }
+  75% {
+    transform: rotate(9deg) translateY(-2px);
+  }
+}
+
+/* CRT skins */
+.scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 46;
+  pointer-events: none;
+  background: repeating-linear-gradient(rgba(0, 0, 0, 0.16) 0 1px, transparent 1px 3px);
+}
+
+:root[data-skin] body {
+  text-shadow: 0 0 2px color-mix(in srgb, var(--fg) 55%, transparent);
+}
+
+:root[data-skin='amber'] {
+  --bg: #140b00;
+  --fg: #ffb000;
+  --muted: #a8781f;
+  --line: #3a2600;
+  --panel: #1b1100;
+  --accent: #ff9500;
+}
+
+:root[data-skin='green'] {
+  --bg: #000e05;
+  --fg: #4dff88;
+  --muted: #2f9d5a;
+  --line: #0d3d22;
+  --panel: #001a0c;
+  --accent: #33ff66;
+}
+
+:root[data-skin='blueprint'] {
+  --bg: #081426;
+  --fg: #a9d8ff;
+  --muted: #5f86b3;
+  --line: #123a5e;
+  --panel: #0d1e38;
+  --accent: #4fb8ff;
+}
+
 .sub {
   color: var(--muted);
 }
