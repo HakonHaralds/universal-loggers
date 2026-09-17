@@ -243,6 +243,16 @@ h1 {
   min-height: 6.5em;
 }
 
+.viz-canvas {
+  display: block;
+  width: 100%;
+  height: 120px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  background: var(--panel);
+}
+
 .newsticker {
   display: flex;
   align-items: center;

@@ -8,6 +8,7 @@ import { pushToast } from './engine/state'
 import { fmt, money, pct, headline, duration } from './format'
 import { Odometer } from './ui/Odometer'
 import { NewsTicker } from './ui/NewsTicker'
+import { CoverageViz } from './ui/CoverageViz'
 import { REGIONS, regionReq, regionFillOf, regionUnlocked, regionFull } from './engine/regions'
 import { STRATEGIES, RING } from './engine/tournament'
 import { currentFrontier, nextGate } from './engine/frontiers'
@@ -157,6 +158,10 @@ export default function App() {
       </div>
 
       <NewsTicker phase={s.phase} />
+
+      {s.phase >= 2 && (
+        <CoverageViz phase={s.phase} coverage={coverage(s)} explored={s.explored} probes={s.probes} />
+      )}
 
       {hasPerry && <PerryConsole s={s} a={fxColor} />}
       {s.moltEngine && s.phase !== 2 && <MoltChannel a={fxColor} />}
