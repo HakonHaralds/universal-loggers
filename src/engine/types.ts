@@ -96,6 +96,7 @@ export interface GameState {
   finaleDismissed: boolean
   stabilizeUI: boolean
   skin: string
+  sound: boolean
   purchased: string[]
   seen: string[]
   milestonesShown: string[]

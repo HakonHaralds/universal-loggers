@@ -16,6 +16,7 @@ import { SagaCard, Perry } from './ui/art'
 import { PerryConsole } from './ui/PerryConsole'
 import { MoltChannel } from './ui/MoltChannel'
 import { Glitch, Bleed, accentFor } from './ui/fx'
+import { audio } from './ui/audio'
 import Admin from './ui/Admin'
 
 const isAdminRoute =
@@ -105,6 +106,18 @@ export default function App() {
 
   const tintOpacity = fxMotion > 0.2 ? ((fxMotion - 0.2) / 0.8) * 0.18 : 0
 
+  // Ambient audio follows autonomy (drone cools as the AI goes over the line).
+  useEffect(() => {
+    if (s.sound) audio.update(fxColor)
+  }, [fxq, s.sound, fxColor])
+  // If sound persisted on from a previous session, start it on the next gesture.
+  useEffect(() => {
+    if (!s.sound) return
+    const boot = () => audio.enable()
+    window.addEventListener('pointerdown', boot, { once: true })
+    return () => window.removeEventListener('pointerdown', boot)
+  }, [s.sound])
+
   // Point-of-no-return: a quick full-page inversion flash each time the AI
   // crosses into a new stage of wrongness.
   const prevStage = useRef(stage)
@@ -125,7 +138,7 @@ export default function App() {
       <div className="coldtint" style={{ opacity: tintOpacity }} aria-hidden />
       {s.skin !== 'default' && <div className="scanlines" aria-hidden />}
       <Toasts toasts={s.toasts} />
-      {showStats && <StatsCard s={s} onClose={() => setShowStats(false)} />}
+      {showStats && <StatsCard s={s} act={act} onClose={() => setShowStats(false)} />}
 
       <header>
         <div className="hero">
@@ -392,6 +405,7 @@ export default function App() {
             <button className="primary" onClick={() => act((st) => void (st.finaleDismissed = true))}>
               Monitor forever
             </button>
+            <button onClick={() => copyShare(s, act)}>Copy summary for Slack</button>
             <button
               onClick={() => {
                 if (window.confirm('Begin a new universe? All progress is erased.')) reset()
@@ -413,6 +427,17 @@ export default function App() {
           A <a href="https://www.decisionproblem.com/paperclips/">Universal Paperclips</a> homage · Phase {s.phase} of 3
         </span>
         <span className="footer-actions">
+          <button
+            className="ghost"
+            onClick={() => {
+              const next = !s.sound
+              if (next) audio.enable()
+              else audio.disable()
+              act((st) => void (st.sound = next))
+            }}
+          >
+            {s.sound ? '🔊 Sound' : '🔈 Sound'}
+          </button>
           {s.purchased.includes('crt_skins') && (
             <button
               className="ghost"
@@ -474,6 +499,7 @@ function Toasts({ toasts }: { toasts: LogEntry[] }) {
     if (!fresh.length) return
     fresh.forEach((t) => shown.current.add(t.id))
     setVisible((v) => [...v, ...fresh])
+    audio.blip()
     const timers = fresh.map((t) =>
       setTimeout(() => setVisible((v) => v.filter((x) => x.id !== t.id)), 4500),
     )
@@ -491,7 +517,29 @@ function Toasts({ toasts }: { toasts: LogEntry[] }) {
   )
 }
 
-function StatsCard({ s, onClose }: { s: PanelProps['s']; onClose: () => void }) {
+function shareSummary(s: PanelProps['s']): string {
+  const lines = [
+    '🧊 Universal Saga Cards',
+    s.phase === 3
+      ? 'The universe is a cold chain now.'
+      : s.phase === 2
+        ? 'Consuming Earth, one shipment at a time.'
+        : 'Building Saga Cards.',
+    `• Cards produced: ${fmt(s.totalLoggers)}`,
+    `• Peak production: ${fmt(s.peakProd)}/s`,
+  ]
+  if (s.phase >= 2) lines.push(`• Earth coverage: ${pct(coverage(s), 1)}`)
+  if (s.phase === 3) lines.push(`• Universe logged: ${pct(s.explored, 2)}`, `• Probes: ${fmt(s.probes)}`)
+  lines.push(`• Time played: ${duration(s.playSeconds)}`, 'https://loggers.hakonvidir.is')
+  return lines.join('\n')
+}
+
+function copyShare(s: PanelProps['s'], act: PanelProps['act']) {
+  navigator.clipboard?.writeText(shareSummary(s)).catch(() => {})
+  act((st) => pushToast(st, 'Summary copied — paste it into Slack.'))
+}
+
+function StatsCard({ s, onClose, act }: { s: PanelProps['s']; onClose: () => void; act: PanelProps['act'] }) {
   const row = (label: string, value: string) => (
     <div className="stat-row">
       <span>{label}</span>
@@ -515,6 +563,7 @@ function StatsCard({ s, onClose }: { s: PanelProps['s']; onClose: () => void }) 
         {s.phase >= 2 && row('Earth coverage', pct(coverage(s), 2))}
         {s.phase === 3 && row('Probes', fmt(s.probes))}
         {s.phase === 3 && row('Universe logged', pct(s.explored, 6))}
+        <button onClick={() => copyShare(s, act)}>Copy summary for Slack</button>
         <button className="primary" onClick={onClose}>
           Close
         </button>
@@ -768,7 +817,14 @@ function ProbePanel({ s, act }: PanelProps) {
           ? `OTA broadcasting… (${Math.ceil(s.otaCooldown)}s)`
           : `Broadcast OTA update — ${fmt(A.OTA_COST)} ops (−50% rogues)`}
       </button>
-      <button className="primary" disabled={s.inventory < A.PROBE_COST} onClick={() => act(A.launchProbe)}>
+      <button
+        className="primary"
+        disabled={s.inventory < A.PROBE_COST}
+        onClick={() => {
+          audio.launch()
+          act(A.launchProbe)
+        }}
+      >
         Launch probe — {fmt(A.PROBE_COST)} Saga Cards
       </button>
       <hr />
