@@ -538,14 +538,17 @@ function RegionPanel({ s, act }: PanelProps) {
 }
 
 function ProbePanel({ s, act }: PanelProps) {
-  const allocRow = (label: string, key: keyof typeof s.alloc) => (
-    <div className="row">
-      <span>{label}</span>
-      <span className="allocctl">
-        <button onClick={() => act((st) => A.adjustAlloc(st, key, -1))}>−</button>
-        <b>{s.alloc[key]}</b>
-        <button onClick={() => act((st) => A.adjustAlloc(st, key, 1))}>+</button>
-      </span>
+  const allocRow = (label: string, key: keyof typeof s.alloc, desc: string) => (
+    <div className="alloc-row">
+      <div className="alloc-head">
+        <span>{label}</span>
+        <span className="allocctl">
+          <button onClick={() => act((st) => A.adjustAlloc(st, key, -1))}>−</button>
+          <b>{s.alloc[key]}</b>
+          <button onClick={() => act((st) => A.adjustAlloc(st, key, 1))}>+</button>
+        </span>
+      </div>
+      <div className="alloc-desc">{desc}</div>
     </div>
   )
   const frontier = currentFrontier(s)
@@ -601,10 +604,10 @@ function ProbePanel({ s, act }: PanelProps) {
           {A.allocTotal(s.alloc)} <em>of {s.designCap}</em>
         </b>
       </div>
-      {allocRow('Replication', 'rep')}
-      {allocRow('Hazard resistance', 'haz')}
-      {allocRow('Logging', 'log')}
-      {allocRow('Combat (OTA)', 'com')}
+      {allocRow('Replication', 'rep', 'Fleet growth rate. Faster — but a fixed slice of each generation drifts rogue.')}
+      {allocRow('Hazard resistance', 'haz', 'Cuts probe attrition from the void. Fully eliminated at 3; beyond that is wasted.')}
+      {allocRow('Logging', 'log', 'Exploration speed — how fast you log the frontier. Your main progress lever.')}
+      {allocRow('Combat (OTA)', 'com', 'Culls rogue probes, keeping fleet loyalty high. Loyalty in turn boosts exploration.')}
     </section>
   )
 }
