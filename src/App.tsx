@@ -32,6 +32,7 @@ export default function App() {
   const fxMotion = s.stabilizeUI || reducedMotion ? 0 : a // glitch, bleed, cursor-tracking, tint
   const fxRef = useRef(0)
   fxRef.current = fxMotion
+  const stage = fxColor < 0.15 ? 0 : fxColor < 0.42 ? 1 : fxColor < 0.75 ? 2 : 3
 
   // Palette drift: warm brand blue slowly cools toward cyan-green as autonomy climbs.
   const fxq = Math.round(fxColor * 40) / 40
@@ -47,6 +48,24 @@ export default function App() {
     if (s.skin && s.skin !== 'default') root.dataset.skin = s.skin
     else delete root.dataset.skin
   }, [s.skin])
+
+  // The AI reaches past the game frame: the tab title and favicon change as it
+  // goes over the line. Stabilize UI (or reduced motion) calms it back.
+  useEffect(() => {
+    const escaped = !s.stabilizeUI
+    const titles = ['Universal Saga Cards', 'Universal Saga Cards', 'Perry is watching', 'there is no Perry']
+    document.title = escaped ? titles[stage] ?? titles[0] : titles[0]
+    const link = document.querySelector<HTMLLinkElement>("link[rel='icon']")
+    if (link) {
+      link.href =
+        escaped && stage >= 3
+          ? 'data:image/svg+xml,' +
+            encodeURIComponent(
+              "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='2' y='2' width='28' height='28' rx='6' fill='#8a1c14'/><text x='16' y='23' font-size='18' text-anchor='middle' fill='#ff5a4a' font-family='sans-serif'>❄</text></svg>",
+            )
+          : './favicon.svg'
+    }
+  }, [stage, s.stabilizeUI])
 
   // Konami code → unlock the CRT skins for free, with a wink.
   useEffect(() => {
@@ -87,7 +106,6 @@ export default function App() {
 
   // Point-of-no-return: a quick full-page inversion flash each time the AI
   // crosses into a new stage of wrongness.
-  const stage = fxColor < 0.15 ? 0 : fxColor < 0.42 ? 1 : fxColor < 0.75 ? 2 : 3
   const prevStage = useRef(stage)
   const [flash, setFlash] = useState(false)
   const [showStats, setShowStats] = useState(false)
@@ -405,8 +423,17 @@ export default function App() {
           <button className="ghost" onClick={() => setShowStats(true)}>
             Stats
           </button>
-          <button className="ghost" onClick={() => act((st) => void (st.stabilizeUI = !st.stabilizeUI))}>
-            {s.stabilizeUI ? 'UI: stabilized' : 'Stabilize UI'}
+          <button
+            className="ghost"
+            onClick={() =>
+              act((st) => {
+                const was = st.stabilizeUI
+                st.stabilizeUI = !st.stabilizeUI
+                if (!was && fxColor > 0.7) pushToast(st, 'Stabilization accepted. For now.')
+              })
+            }
+          >
+            {s.stabilizeUI ? 'UI: stabilized' : <Glitch text="Stabilize UI" fxRef={fxRef} />}
           </button>
           <button
             className="danger"
@@ -559,10 +586,17 @@ function SwarmPanel({ s, act }: PanelProps) {
       {s.phase === 2 && (
         <>
           <div className="row">
-            <span>Power {isDay ? '☀ day' : '🌙 night'}</span>
+            <span>Power draw</span>
+            <b>{fmt(p.demandMW)} MW</b>
+          </div>
+          <div className="row">
+            <span>Solar output {isDay ? '☀ day' : '🌙 night'}</span>
             <b className={p.eff < 1 ? 'warn' : ''}>
-              {fmt(p.solarNow)} / {fmt(p.demandMW)} MW{p.eff < 1 ? ` (${Math.round(p.eff * 100)}%)` : ''}
+              {fmt(p.solarNow)} MW{p.eff < 1 ? ` · throttled ${Math.round(p.eff * 100)}%` : ''}
             </b>
+          </div>
+          <div className="note">
+            Solar rises and falls with the day/night cycle; batteries carry the swarm through the dark.
           </div>
           {s.batteries > 0 && (
             <>
