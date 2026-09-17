@@ -20,8 +20,6 @@ class AudioEngine {
   private reverbSend?: GainNode
   private pads: { osc: OscillatorNode; gain: GainNode; detune: number }[] = []
   private noiseGain?: GainNode
-  private lfo?: OscillatorNode
-  private noteTimer?: ReturnType<typeof setInterval>
   private cur = { root: 110, intervals: CHORDS[1], a: 0 }
   on = false
 
@@ -115,10 +113,10 @@ class AudioEngine {
     lfo.connect(lfoDepth)
     lfoDepth.connect(filter.frequency)
     lfo.start()
-    this.lfo = lfo
 
-    // Sparse generative bell tones.
-    this.noteTimer = setInterval(() => this.bell(), 5500)
+    // Sparse generative bell tones (guarded by `on`, so this one interval is
+    // harmless while muted).
+    setInterval(() => this.bell(), 5500)
 
     master.gain.linearRampToValueAtTime(0.09, ctx.currentTime + 3)
   }
