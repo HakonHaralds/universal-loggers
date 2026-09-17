@@ -29,7 +29,7 @@ function stepMarket(s: GameState, dt: number) {
   // Keep ~2s of production buffered, or a reel's worth — enough that the lines
   // never starve. One-reel-per-tick throttled average output below throughput,
   // which stalled inventory growth once production neared demand.
-  if (s.autoReelBuyer) {
+  if (s.autoReelBuyer && s.autoBuyEnabled) {
     const target = Math.max(s.setsPerReel, productionPerSec(s) * 2)
     let guard = 0
     while (s.components < target && s.funds >= s.reelPrice && guard < 100000) {

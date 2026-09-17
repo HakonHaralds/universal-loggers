@@ -32,6 +32,7 @@ export interface GameState {
   reelBase: number
   setsPerReel: number
   autoReelBuyer: boolean
+  autoBuyEnabled: boolean
   // automation (phase 1)
   lines: number
   megalines: number

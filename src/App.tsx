@@ -200,7 +200,14 @@ export default function App() {
               <button disabled={s.funds < s.reelPrice} onClick={() => act(A.buyReel)}>
                 Buy reel ({s.setsPerReel} sets) — {money(s.reelPrice)}
               </button>
-              {s.autoReelBuyer && <div className="note">AutoReelBuyer active</div>}
+              {s.autoReelBuyer && (
+                <button
+                  className="ghost"
+                  onClick={() => act((st) => void (st.autoBuyEnabled = !st.autoBuyEnabled))}
+                >
+                  AutoReelBuyer: {s.autoBuyEnabled ? 'on' : 'off'}
+                </button>
+              )}
               <hr />
               <button disabled={s.funds < A.lineCost(s)} onClick={() => act(A.buyLine)}>
                 PCBA line — {money(A.lineCost(s))}

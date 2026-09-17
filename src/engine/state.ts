@@ -24,6 +24,7 @@ export function initialState(): GameState {
     reelBase: 600,
     setsPerReel: 100,
     autoReelBuyer: false,
+    autoBuyEnabled: true,
     lines: 0,
     megalines: 0,
     megaUnlocked: false,
