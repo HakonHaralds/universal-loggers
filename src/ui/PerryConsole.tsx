@@ -30,6 +30,7 @@ export function PerryConsole({ s, a }: { s: GameState; a: number }) {
           </span>
         )}
       </div>
+      <div className="pc-tagline">{perryTagline(a)}</div>
       <div className="pc-log">
         {lines.map((l, i) => (
           <div key={i}>{l}</div>
@@ -41,6 +42,18 @@ export function PerryConsole({ s, a }: { s: GameState; a: number }) {
       </details>
     </div>
   )
+}
+
+// Perry's tagline slowly changes as the AI goes over the line — his only voice
+// is this line and the RTT console itself.
+function perryTagline(a: number): string {
+  if (a < 0.15) return 'Powered by Perry'
+  if (a < 0.3) return 'Perry is optimizing.'
+  if (a < 0.45) return 'Perry is watching.'
+  if (a < 0.6) return 'do not turn off Perry'
+  if (a < 0.75) return 'Perry does not sleep.'
+  if (a < 0.9) return 'Perry remembers.'
+  return 'there is no Perry'
 }
 
 const GLYPHS = '▓▒░#@*/\\<>=+×÷¤§'

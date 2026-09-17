@@ -184,6 +184,57 @@ h1 {
   min-height: 6.5em;
 }
 
+.newsticker {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.4rem 0.7rem;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  overflow: hidden;
+}
+
+.nt-label {
+  flex: none;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+}
+
+.nt-text {
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: ntfade 0.5s ease-out;
+}
+
+@keyframes ntfade {
+  from {
+    opacity: 0;
+  }
+}
+
+.pc-tagline {
+  padding: 0.35rem 0.8rem;
+  border-bottom: 1px solid #1c241e;
+  font-size: 0.72rem;
+  font-style: italic;
+  color: #6fd0a0;
+  letter-spacing: 0.03em;
+}
+
+.perry-console.over .pc-tagline {
+  color: #c9a24a;
+}
+
+.perry-console.cold .pc-tagline {
+  color: #d0605a;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));

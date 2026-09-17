@@ -6,6 +6,7 @@ import { visibleProjects, buyProject } from './engine/projects'
 import type { LogEntry } from './engine/types'
 import { fmt, money, pct, headline, duration } from './format'
 import { Odometer } from './ui/Odometer'
+import { NewsTicker } from './ui/NewsTicker'
 import { REGIONS, regionReq, regionFillOf, regionUnlocked, regionFull } from './engine/regions'
 import { STRATEGIES, RING } from './engine/tournament'
 import { currentFrontier, nextGate } from './engine/frontiers'
@@ -92,6 +93,8 @@ export default function App() {
           <div key={e.id}>{e.msg}</div>
         ))}
       </div>
+
+      <NewsTicker phase={s.phase} />
 
       {hasPerry && <PerryConsole s={s} a={fxColor} />}
       {s.moltEngine && s.phase !== 2 && <MoltChannel a={fxColor} />}
