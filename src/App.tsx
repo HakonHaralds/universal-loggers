@@ -177,7 +177,7 @@ export default function App() {
       )}
 
       {hasPerry && <PerryConsole s={s} a={fxColor} />}
-      {s.moltEngine && s.phase !== 2 && <MoltChannel a={fxColor} />}
+      {s.moltEngine && s.phase === 1 && <MoltChannel a={fxColor} />}
       {isAdminRoute && <Admin s={s} act={act} reset={reset} />}
 
       <main className="grid">

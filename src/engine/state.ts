@@ -83,7 +83,7 @@ export function initialState(): GameState {
     finaleDismissed: false,
     stabilizeUI: false,
     skin: 'default',
-    sound: false,
+    sound: true,
     purchased: [],
     seen: [],
     milestonesShown: [],
