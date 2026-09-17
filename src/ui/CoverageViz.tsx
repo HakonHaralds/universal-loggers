@@ -96,13 +96,15 @@ export function CoverageViz({ phase, coverage, explored, probes }: VizState) {
         ctx.fillStyle = '#04060b'
         ctx.fillRect(0, 0, W, H)
         const lit = Math.floor(explored * stars.length)
+        const drift = (t * 6) % W // slow parallax so the field is always moving
         stars.forEach((s, i) => {
           const on = i < lit
-          const a = on ? 0.55 + 0.45 * Math.sin(t + s.tw) : 0.1
-          ctx.globalAlpha = a
-          ctx.fillStyle = on ? '#bfe6ff' : '#2a3550'
+          const x = (s.x * W + drift) % W
+          const a = on ? 0.5 + 0.5 * Math.sin(t * 1.3 + s.tw) : 0.08 + 0.06 * Math.sin(t * 0.6 + s.tw)
+          ctx.globalAlpha = Math.max(0, a)
+          ctx.fillStyle = on ? '#bfe6ff' : '#3a4a68'
           ctx.beginPath()
-          ctx.arc(s.x * W, s.y * H, s.r, 0, 7)
+          ctx.arc(x, s.y * H, on ? s.r * 1.4 : s.r, 0, 7)
           ctx.fill()
         })
         if (probes > prevProbes) {
