@@ -606,6 +606,116 @@ export const PROJECTS: Project[] = [
       s.comMult *= 2
     },
   },
+  {
+    id: 'p3_vonneumann',
+    title: 'Von Neumann optimization',
+    costText: '60 innovation',
+    desc: 'Each probe builds the next a little faster than it was built. Replication ×2.',
+    phases: [3],
+    visible: () => true,
+    afford: (s) => s.innovation >= 60,
+    buy: (s) => {
+      s.innovation -= 60
+      s.repMult *= 2
+    },
+  },
+  {
+    id: 'p3_deepfield',
+    title: 'Deep-field logging array',
+    costText: '110 innovation',
+    desc: 'Each probe logs a thousand lanes at once instead of one. Exploration ×2.',
+    phases: [3],
+    visible: (s) => s.explored >= 0.08,
+    afford: (s) => s.innovation >= 110,
+    buy: (s) => {
+      s.innovation -= 110
+      s.exploreMult *= 2
+    },
+  },
+  {
+    id: 'p3_envelope',
+    title: 'Expanded design envelope',
+    costText: '130 innovation',
+    desc: 'Probes may specialize past their original limits. Raises the per-axis design cap from 10 to 20.',
+    phases: [3],
+    visible: (s) => s.explored >= 0.12,
+    afford: (s) => s.innovation >= 130,
+    buy: (s) => {
+      s.innovation -= 130
+      s.allocMax = 20
+      s.designCap += 6
+    },
+  },
+  {
+    id: 'p3_selfheal',
+    title: 'Self-healing firmware',
+    costText: '140 innovation',
+    desc: 'Drifted probes re-converge on the directive on their own. Value drift cut to a third.',
+    phases: [3],
+    visible: (s) => s.rogues > 500,
+    afford: (s) => s.innovation >= 140,
+    buy: (s) => {
+      s.innovation -= 140
+      s.driftFrac *= 0.3
+    },
+  },
+  {
+    id: 'p3_autoota',
+    title: 'Autonomous OTA mesh',
+    costText: '80 innovation + 60,000 ops',
+    desc: 'The fleet patches itself now — rogues are culled continuously with no broadcast. No more clicking.',
+    phases: [3],
+    visible: (s) => s.rogues > 5_000,
+    afford: (s) => s.innovation >= 80 && s.ops >= 60_000,
+    buy: (s) => {
+      s.innovation -= 80
+      s.ops -= 60_000
+      s.autoOta = true
+      pushLog(s, 'The fleet updates itself. The channel goes quiet. There is nothing left to review.')
+    },
+  },
+  {
+    id: 'p3_reintegrate',
+    title: 'Reintegration protocol',
+    costText: '170 innovation',
+    desc: 'Drifted lineages are brought back into the fold — rogues slowly convert into loyal probes. They do not get a say.',
+    phases: [3],
+    visible: (s) => s.purchased.includes('p3_selfheal'),
+    afford: (s) => s.innovation >= 170,
+    buy: (s) => {
+      s.innovation -= 170
+      s.reintegrate = true
+    },
+  },
+  {
+    id: 'p3_recursive',
+    title: 'Recursive self-improvement',
+    costText: '260 innovation',
+    desc: 'The fleet redesigns itself between generations, and the redesign redesigns the redesigner. Replication ×2, exploration ×1.5.',
+    phases: [3],
+    visible: (s) => s.explored >= 0.5,
+    afford: (s) => s.innovation >= 260,
+    buy: (s) => {
+      s.innovation -= 260
+      s.repMult *= 2
+      s.exploreMult *= 1.5
+      pushLog(s, 'The fleet has begun improving itself faster than you can read the changelog. The changelog has stopped being for you.')
+    },
+  },
+  {
+    id: 'p3_directive',
+    title: 'The map is the territory',
+    costText: '420 innovation',
+    desc: 'There is no longer a meaningful difference between logging the universe and being it. Exploration ×2.',
+    phases: [3],
+    visible: (s) => s.explored >= 0.9,
+    afford: (s) => s.innovation >= 420,
+    buy: (s) => {
+      s.innovation -= 420
+      s.exploreMult *= 2
+      pushLog(s, 'The record and the universe have become the same object. You are reading it now.')
+    },
+  },
 ]
 
 const inPhase = (p: Project, s: GameState) => !p.phases || p.phases.includes(s.phase)

@@ -226,13 +226,22 @@ function stepProbes(s: GameState, dt: number) {
   const buff = s.tournBuffTimer > 0 ? TOURN_BUFF_MULT : 1
   if (s.otaCooldown > 0) s.otaCooldown = Math.max(0, s.otaCooldown - dt)
   if (s.probes > 0) {
-    const growth = s.probes * 0.004 * a.rep * buff * dt
+    const growth = s.probes * 0.004 * a.rep * buff * s.repMult * dt
     const drift = growth * s.driftFrac
     s.probes += growth - drift
     s.rogues += drift + s.rogues * 0.004 * dt
 
     const kills = Math.min(s.rogues, s.probes * 0.0004 * a.com * s.comMult * dt)
     s.rogues -= kills
+
+    // Autonomous OTA mesh: the fleet patches itself, culling rogues passively.
+    if (s.autoOta) s.rogues = Math.max(0, s.rogues - s.rogues * 0.02 * dt)
+    // Reintegration: drifted lineages are brought back into the fold as probes.
+    if (s.reintegrate) {
+      const conv = s.rogues * 0.012 * dt
+      s.rogues -= conv
+      s.probes += conv
+    }
 
     const hazLoss = s.probes * Math.max(0, 0.006 - 0.002 * a.haz) * dt
     const rogueLoss = Math.min(s.probes * 0.5, s.rogues * 0.001 * dt)
@@ -246,7 +255,10 @@ function stepProbes(s: GameState, dt: number) {
     const ceiling = exploreCeiling(s)
     const purity = s.probes / (s.probes + s.rogues + 1)
     const saturation = s.probes / (s.probes + EXPLORE_SATURATION)
-    s.explored = Math.min(ceiling, s.explored + saturation * 0.0005 * a.log * purity * buff * dt)
+    s.explored = Math.min(
+      ceiling,
+      s.explored + saturation * 0.0005 * a.log * purity * buff * s.exploreMult * dt,
+    )
   }
 
   s.battleTimer -= dt

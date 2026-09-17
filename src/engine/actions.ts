@@ -211,7 +211,7 @@ export function allocTotal(a: ProbeAlloc) {
 
 export function adjustAlloc(s: GameState, key: keyof ProbeAlloc, delta: number) {
   const next = s.alloc[key] + delta
-  if (next < 0 || next > 10) return
+  if (next < 0 || next > s.allocMax) return
   if (delta > 0 && allocTotal(s.alloc) + delta > s.designCap) return
   s.alloc[key] = next
 }

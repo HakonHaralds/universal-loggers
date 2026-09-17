@@ -83,6 +83,11 @@ export interface GameState {
   driftFrac: number
   comMult: number
   battleTimer: number
+  repMult: number
+  exploreMult: number
+  autoOta: boolean
+  reintegrate: boolean
+  allocMax: number
   // story flags
   hypno: boolean
   phase1Complete: boolean
