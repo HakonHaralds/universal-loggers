@@ -7,8 +7,28 @@ interface VizState {
   probes: number
 }
 
-// A canvas centerpiece: Phase 2 fills a grid of shipments as coverage climbs;
-// Phase 3 lights a starfield as the universe is logged, with streaks on launch.
+// Rough continent blobs (normalized 0–1; y increases southward). Dots that fall
+// inside any blob are "land", giving a recognizable dotted world map.
+const CONTINENTS: [number, number, number, number][] = [
+  [0.19, 0.34, 0.12, 0.2], // North America
+  [0.31, 0.17, 0.06, 0.1], // Canada / Greenland
+  [0.31, 0.72, 0.07, 0.2], // South America
+  [0.5, 0.28, 0.06, 0.11], // Europe
+  [0.54, 0.6, 0.09, 0.22], // Africa
+  [0.72, 0.32, 0.17, 0.18], // Asia
+  [0.67, 0.5, 0.05, 0.08], // India / SE Asia
+  [0.86, 0.75, 0.08, 0.09], // Australia
+]
+
+function isLand(nx: number, ny: number): boolean {
+  for (const [cx, cy, rx, ry] of CONTINENTS) {
+    const dx = (nx - cx) / rx
+    const dy = (ny - cy) / ry
+    if (dx * dx + dy * dy <= 1) return true
+  }
+  return false
+}
+
 export function CoverageViz({ phase, coverage, explored, probes }: VizState) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const st = useRef<VizState & { prevProbes: number }>({ phase, coverage, explored, probes, prevProbes: probes })
@@ -35,6 +55,22 @@ export function CoverageViz({ phase, coverage, explored, probes }: VizState) {
     resize()
     window.addEventListener('resize', resize)
 
+    // Land dots, built once, shuffled so coverage spreads organically.
+    const land: { nx: number; ny: number }[] = []
+    const cols = 100
+    const rows = 34
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const nx = (c + 0.5) / cols
+        const ny = (r + 0.5) / rows
+        if (isLand(nx, ny)) land.push({ nx, ny })
+      }
+    }
+    for (let i = land.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[land[i], land[j]] = [land[j], land[i]]
+    }
+
     const stars = Array.from({ length: 520 }, () => ({
       x: Math.random(),
       y: Math.random(),
@@ -42,8 +78,6 @@ export function CoverageViz({ phase, coverage, explored, probes }: VizState) {
       tw: Math.random() * Math.PI * 2,
     }))
     const streaks: { x: number; y: number; vx: number; vy: number; life: number }[] = []
-    const cols = 52
-    const rows = 16
     let t = 0
     let accent = '#2f7fd6'
     let frame = 0
@@ -93,17 +127,14 @@ export function CoverageViz({ phase, coverage, explored, probes }: VizState) {
         }
         ctx.globalAlpha = 1
       } else {
-        const total = cols * rows
-        const litCount = Math.floor(coverage * total)
-        const r = 1.7
-        for (let i = 0; i < total; i++) {
-          const cx = i % cols
-          const cy = Math.floor(i / cols)
+        const litCount = Math.floor(coverage * land.length)
+        for (let i = 0; i < land.length; i++) {
+          const p = land[i]
           const on = i < litCount
-          ctx.globalAlpha = on ? 0.85 : 0.14
-          ctx.fillStyle = on ? accent : '#8a8a8a'
+          ctx.globalAlpha = on ? 0.95 : 0.18
+          ctx.fillStyle = on ? accent : '#8fa0b0'
           ctx.beginPath()
-          ctx.arc(((cx + 0.5) / cols) * W, ((cy + 0.5) / rows) * H, r, 0, 7)
+          ctx.arc(p.nx * W, p.ny * H, 1.7, 0, 7)
           ctx.fill()
         }
         ctx.globalAlpha = 1

@@ -246,7 +246,7 @@ h1 {
 .viz-canvas {
   display: block;
   width: 100%;
-  height: 120px;
+  height: 190px;
   border: 1px solid var(--line);
   border-radius: 6px;
   margin-bottom: 1rem;
