@@ -35,6 +35,9 @@ class AudioEngine {
       (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
     const ctx = new AC()
     this.ctx = ctx
+    // Browsers often create the context suspended even inside a gesture; resume
+    // it now, or the first-ever session stays silent until toggled off and on.
+    ctx.resume()
 
     const master = ctx.createGain()
     master.gain.value = 0
