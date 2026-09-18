@@ -319,7 +319,7 @@ export default function App() {
                   disabled={s.inventory < A.clusterCostCards(s)}
                   onClick={() => act(A.buyClusterCards)}
                 >
-                  Add cluster (+1,000 ops cap) — {fmt(A.clusterCostCards(s))} cards
+                  Add cluster (+1,000 token cap) — {fmt(A.clusterCostCards(s))} cards
                 </button>
                 <button
                   disabled={s.inventory < A.devTeamCostCards(s)}
@@ -330,7 +330,7 @@ export default function App() {
               </>
             )}
             <div className="row">
-              <span>ops</span>
+              <span>tokens</span>
               <b>
                 {fmt(s.ops)} <em>/ {fmt(opsCap(s))}</em>
               </b>
@@ -351,7 +351,7 @@ export default function App() {
               <button disabled={s.moltCooldown > 0} onClick={() => act(A.moltBurst)}>
                 {s.moltCooldown > 0
                   ? `Molting… (${Math.ceil(s.moltCooldown)}s)`
-                  : `Molt (+${fmt(Math.max(200 * s.clusters, opsCap(s) * 0.25))} ops, overfills)`}
+                  : `Molt (+${fmt(Math.max(200 * s.clusters, opsCap(s) * 0.25))} tokens, overfills)`}
               </button>
             )}
           </section>
@@ -709,7 +709,7 @@ function TournamentPanel({ s, act }: PanelProps) {
         >
           {s.tournCooldown > 0
             ? `Next tournament in ${Math.ceil(s.tournCooldown)}s`
-            : `New tournament — ${fmt(A.TOURN_COST)} ops`}
+            : `New tournament — ${fmt(A.TOURN_COST)} tokens`}
         </button>
       )}
       {field && (
@@ -826,7 +826,7 @@ function ProbePanel({ s, act }: PanelProps) {
       >
         {s.otaCooldown > 0
           ? `OTA broadcasting… (${Math.ceil(s.otaCooldown)}s)`
-          : `Broadcast OTA update — ${fmt(A.OTA_COST)} ops (−50% rogues)`}
+          : `Broadcast OTA update — ${fmt(A.OTA_COST)} tokens (−50% rogues)`}
       </button>
       <button
         className="primary"

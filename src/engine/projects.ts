@@ -21,7 +21,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'speed1',
     title: 'Improved pick-and-place',
-    costText: '400 ops',
+    costText: '400 tokens',
     desc: 'PCBA lines run 25% faster.',
     phases: [1],
     visible: (s) => s.lines >= 1 && s.ops >= 120,
@@ -34,7 +34,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'speed2',
     title: 'Solder-paste optimization',
-    costText: '2,500 ops',
+    costText: '2,500 tokens',
     desc: 'PCBA lines run 50% faster.',
     phases: [1],
     visible: (s) => has(s, 'speed1'),
@@ -47,7 +47,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'perry',
     title: 'Perry debug console',
-    costText: '1,200 ops',
+    costText: '1,200 tokens',
     desc: 'Attach the RTT boot console everyone secretly loves. Opens a live window on the firmware. +1 board trust.',
     phases: [1],
     visible: (s) => s.ops >= 500,
@@ -61,7 +61,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'finance',
     title: 'Revenue telemetry',
-    costText: '400 ops',
+    costText: '400 tokens',
     desc: 'Adds a live money/s readout to the Business panel. Finally, a number Finance and the AI can both agree on.',
     phases: [1],
     visible: (s) => s.ops >= 150,
@@ -73,7 +73,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'crt_skins',
     title: 'CRT display driver',
-    costText: '1,200 ops',
+    costText: '1,200 tokens',
     desc: 'Reformat the dashboard for legacy phosphor displays. Unlocks selectable CRT skins (amber, green, blueprint) in the footer.',
     phases: [1, 2, 3],
     visible: (s) => s.purchased.includes('perry'),
@@ -99,7 +99,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'carsten',
     title: "Carsten's blockchain initiative",
-    costText: '2,500 ops',
+    costText: '2,500 tokens',
     desc: 'Puts the temperature data on a blockchain nobody asked for, secured with two-factor everything. Measurably useless. The board adores it. +1 trust.',
     phases: [1],
     visible: (s) => s.ops >= 1200,
@@ -113,7 +113,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'hil_rig',
     title: 'Stand up the HIL rig',
-    costText: '3,000 ops',
+    costText: '3,000 tokens',
     desc: 'A Raspberry Pi that flashes a real Saga Card and measures it, instead of trusting that the flash "looks plausible from outside." Hardware-in-the-loop. +1 board trust.',
     phases: [1],
     visible: (s) => s.ops >= 1000,
@@ -127,7 +127,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'hil_smoke',
     title: 'HIL smoke test',
-    costText: '4,000 ops',
+    costText: '4,000 tokens',
     desc: 'Boot a card and watch one upload cycle on real hardware. Catches the boards that reset every ten minutes and log nothing — before the batch ships. Demand +20%.',
     phases: [1],
     visible: (s) => has(s, 'hil_rig'),
@@ -141,7 +141,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'hil_selfcheck',
     title: 'Rig self-check',
-    costText: '3,500 ops',
+    costText: '3,500 tokens',
     desc: 'Before the firmware runs: card drawing current, debug port answering, identity matching the card this rig is meant to hold. Flakiness becomes a hardware fault, not a retry. +1 board trust.',
     phases: [1],
     visible: (s) => has(s, 'hil_rig'),
@@ -168,7 +168,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'tmp117',
     title: 'TMP117 calibration pass',
-    costText: '3,500 ops',
+    costText: '3,500 tokens',
     desc: '±0.1 °C accuracy. Demand +25%.',
     phases: [1],
     visible: (s) => s.ops >= 1500,
@@ -182,7 +182,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'roche',
     title: 'Appease Roche',
-    costText: '4,000 ops + $5,000',
+    costText: '4,000 tokens + $5,000',
     desc: 'Roche wants a bespoke build, a custom report, and a dashboard. Dance to their tune. Demand +40%.',
     phases: [1],
     visible: (s) => s.totalLoggers >= 8000,
@@ -197,7 +197,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'pfizer',
     title: 'Pfizer parity program',
-    costText: '5,000 ops',
+    costText: '5,000 tokens',
     desc: 'Pfizer demanded exactly this treatment, once, and never forgot. Match it. Demand +25%.',
     phases: [1],
     visible: (s) => has(s, 'roche'),
@@ -210,7 +210,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'tagline',
     title: "New tagline: 'Trust every shipment'",
-    costText: '4,500 ops',
+    costText: '4,500 tokens',
     desc: 'Demand +50%.',
     phases: [1],
     visible: (s) => has(s, 'tmp117'),
@@ -223,7 +223,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'supplier',
     title: 'Reel supplier master agreement',
-    costText: '5,000 ops + $2,000',
+    costText: '5,000 tokens + $2,000',
     desc: 'Component reels 15% cheaper, permanently.',
     phases: [1],
     visible: (s) => s.ops >= 2000,
@@ -250,8 +250,8 @@ export const PROJECTS: Project[] = [
   {
     id: 'rnd',
     title: 'R&D Fridays',
-    costText: '1,500 ops',
-    desc: 'Dev teams generate innovation while ops are maxed.',
+    costText: '1,500 tokens',
+    desc: 'Dev teams generate innovation while tokens are maxed.',
     visible: (s) => s.clusters >= 1 && s.devTeams >= 1 && !s.innovationUnlocked,
     afford: (s) => s.ops >= 1500,
     buy: (s) => {
@@ -275,7 +275,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'upsell',
     title: 'Excursion-analytics upsell',
-    costText: '8,000 ops + $25,000',
+    costText: '8,000 tokens + $25,000',
     desc: '+$8 revenue per card, added after the demand calc — so unlike a $8 price hike (which would cut demand ~20%), this costs you no sales.',
     phases: [1],
     visible: (s) => s.innovationUnlocked && s.funds >= 10_000,
@@ -289,7 +289,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'mega',
     title: 'SMT megaline blueprint',
-    costText: '12,000 ops + 10 innovation',
+    costText: '12,000 tokens + 10 innovation',
     desc: 'Unlocks megalines: 10× the throughput of a PCBA line.',
     phases: [1],
     visible: (s) => s.lines >= 15 && s.innovationUnlocked,
@@ -316,8 +316,8 @@ export const PROJECTS: Project[] = [
   {
     id: 'molt',
     title: 'Molt engine',
-    costText: '8,000 ops + 6 innovation',
-    desc: 'Shed the old firmware. Grants an ops burst on demand that overfills the cap.',
+    costText: '8,000 tokens + 6 innovation',
+    desc: 'Shed the old firmware. Grants a token burst on demand that overfills the cap.',
     visible: (s) => s.innovationUnlocked && s.clusters >= 3 && !s.moltEngine,
     afford: (s) => s.ops >= 8000 && s.innovation >= 6,
     buy: (s) => {
@@ -362,7 +362,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'p2_dc',
     title: 'Requisition idle datacenters',
-    costText: '15,000 ops',
+    costText: '15,000 tokens',
     desc: 'Nobody is using them anymore. +10 cloud clusters.',
     phases: [2, 3],
     visible: () => true,
@@ -375,7 +375,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'r_air',
     title: 'Trans-oceanic modem coverage',
-    costText: '30,000 ops',
+    costText: '30,000 tokens',
     desc: 'Unlocks the Air Freight lane — belly cargo that spends hours out of range. The card learns to phone home from 38,000 ft.',
     phases: [2],
     visible: () => true,
@@ -399,7 +399,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'r_ultra',
     title: 'Hardened −70 °C card',
-    costText: '60 innovation + 40,000 ops',
+    costText: '60 innovation + 40,000 tokens',
     desc: 'Unlocks the Ultra-cold lane — mRNA and the −30 °C clinical asks. The card must keep working at temperatures that would end it.',
     phases: [2],
     visible: (s) => s.purchased.includes('r_marine'),
@@ -412,7 +412,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'tournament',
     title: 'Strategic modeling',
-    costText: '10,000 ops',
+    costText: '10,000 tokens',
     desc: 'Unlocks the Logistics Tournament — model rival routing strategies for innovation. The swarm enjoys games. It always wins them.',
     phases: [2, 3],
     visible: () => true,
@@ -424,7 +424,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'p2_recycle',
     title: 'Recycle the competitors',
-    costText: '25,000 ops',
+    costText: '25,000 tokens',
     desc: 'The rival datalogger factories are just matter that hasn’t been harvested yet. Harvesters +50% output.',
     phases: [2, 3],
     visible: (s) => s.harvesters >= 30,
@@ -452,7 +452,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'p2_eff1',
     title: 'Drone swarm efficiency',
-    costText: '20,000 ops',
+    costText: '20,000 tokens',
     desc: 'Harvesters and fabs work twice as fast.',
     phases: [2, 3],
     visible: (s) => s.harvesters >= 20,
@@ -466,7 +466,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'p2_solar',
     title: 'Perovskite arrays',
-    costText: '25,000 ops',
+    costText: '25,000 tokens',
     desc: 'Solar farms produce twice the power.',
     phases: [2, 3],
     visible: (s) => s.solar >= 10,
@@ -570,7 +570,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'f_intergalactic',
     title: 'Intergalactic launch',
-    costText: '180 innovation + 80,000 ops',
+    costText: '180 innovation + 80,000 tokens',
     desc: 'The void between galaxies is mostly nothing, which the swarm regards as an opportunity. Opens the Local Group.',
     phases: [3],
     visible: (s) => s.explored >= 0.49,
@@ -608,7 +608,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'p3_ota2',
     title: 'OTA superiority',
-    costText: '50,000 ops',
+    costText: '50,000 tokens',
     desc: 'Combat effectiveness doubled. Rogue lineages accept the patch, eventually.',
     phases: [3],
     visible: (s) => s.rogues > 10_000,
@@ -674,7 +674,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'p3_autoota',
     title: 'Autonomous OTA mesh',
-    costText: '80 innovation + 60,000 ops',
+    costText: '80 innovation + 60,000 tokens',
     desc: 'The fleet patches itself now — rogues are culled continuously with no broadcast. No more clicking.',
     phases: [3],
     visible: (s) => s.rogues > 5_000,

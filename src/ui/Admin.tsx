@@ -24,7 +24,7 @@ export default function Admin({ s, act, reset }: Props) {
     <section className="panel admin">
       <h2>Admin / test console</h2>
       <div className="note">
-        phase {s.phase} · Saga Cards {fmt(s.totalLoggers)} · inventory {fmt(s.inventory)} · ops {fmt(s.ops)}/
+        phase {s.phase} · Saga Cards {fmt(s.totalLoggers)} · inventory {fmt(s.inventory)} · tokens {fmt(s.ops)}/
         {fmt(opsCap(s))} · innovation {fmt(s.innovation)} · probes {fmt(s.probes)} · explored{' '}
         {(s.explored * 100).toFixed(2)}%
       </div>
@@ -42,7 +42,7 @@ export default function Admin({ s, act, reset }: Props) {
         {cheat('+10 trust', (st) => void (st.trust += 10))}
         {cheat('+10 dev teams', (st) => void (st.devTeams += 10))}
         {cheat('+10 clusters', (st) => void (st.clusters += 10))}
-        {cheat('Fill ops', (st) => void (st.ops = opsCap(st)))}
+        {cheat('Fill tokens', (st) => void (st.ops = opsCap(st)))}
         {cheat('+100 innovation', (st) => {
           st.innovationUnlocked = true
           st.innovation += 100

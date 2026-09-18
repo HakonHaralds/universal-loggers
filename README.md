@@ -21,8 +21,8 @@ cold chain at 2.725 K.
 market; AutoReelBuyer automates it), scale up PCBA lines then SMT megalines,
 and set price against demand. Production milestones (a Fibonacci ladder) earn
 **board trust**, which you spend on dev teams and cloud clusters. Clusters cap
-your **ops**; dev teams fill them; at full ops you accrue **innovation**. Ops
-and innovation buy **projects** — quality upgrades, the HIL rig chain, the Molt
+your **tokens**; dev teams fill them; at full tokens you accrue **innovation**.
+Tokens and innovation buy **projects** — quality upgrades, the HIL rig chain, the Molt
 engine, and finally *Full cold-chain autonomy*, which ends Phase 1.
 
 **Phase 2 — Earth.** Money is over; Saga Cards are the currency. A self-feeding
